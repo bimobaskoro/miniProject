@@ -4,6 +4,7 @@ export type TAccountData = {
   id: number;
   fullName: string;
   email: string;
+  password: string;
   noPhone: string;
   type: Type;
 };

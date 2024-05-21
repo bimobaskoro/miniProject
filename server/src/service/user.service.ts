@@ -1,10 +1,11 @@
 import { Request } from "express";
 import { prisma } from "../lib/prisma";
-import { Prisma } from "@prisma/client";
+import { Prisma, UserDetail } from "@prisma/client";
+import { comparePassword, hashPassword } from "../lib/bcrypt";
+import generateReferalCode from "../lib/referalCode";
 
 class UserService {
   public model = prisma.accountData;
-
   async userRegister(req: Request) {
     await prisma.$transaction(async (prisma) => {
       try {
@@ -16,8 +17,7 @@ class UserService {
           type,
           promoId,
           point,
-          referalCode,
-          yourReferalCode,
+          referalCode: inputReferalCode,
           expReferalCode,
         } = req.body;
 
@@ -27,19 +27,32 @@ class UserService {
           },
         });
         if (existingUser.length) throw new Error("username/email already used");
+        const hashPass = await hashPassword(password);
+
+        if (inputReferalCode) {
+          const existingReferalCode = await prisma.userDetail.findFirst({
+            where: {
+              referalCode: inputReferalCode,
+            },
+          });
+
+          if (existingReferalCode) {
+            throw new Error("Referral code not found");
+          }
+        }
 
         const userdata: Prisma.UserDetailCreateInput = {
           promoId,
           point,
-          referalCode,
-          yourReferalCode,
+          referalCode: inputReferalCode,
+          yourReferalCode: generateReferalCode.generate(),
           expReferalCode,
         };
 
         const accdata: Prisma.AccountDataCreateInput = {
           fullName,
           email,
-          password,
+          password: hashPass,
           noPhone,
           type,
           userData: {
@@ -50,7 +63,9 @@ class UserService {
         await prisma.accountData.create({
           data: accdata,
         });
-      } catch (error) {}
+      } catch (error) {
+        if (error instanceof Error) throw new Error(error.message);
+      }
     });
   }
 }
