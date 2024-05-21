@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Type {
+  user
+  admin
+}
+
+model AccountData {
+  id        Int        @id @default(autoincrement())
+  fullName  String
+  email     String
+  password  String
+  type      Type
+  noPhone   String
+  userData  UserDetail @relation(fields: [id], references: [id])
+  updatedAt DateTime   @updatedAt
+  createdAt DateTime   @default(now())
+
+  @@index([email])
+  @@map("accountdata")
+}
+
+model UserDetail {
+  id              Int          @id @default(autoincrement())
+  promoId         Int?
+  point           Int          @default(0)
+  referalCode     String?
+  yourReferalCode String?
+  expReferalCode  DateTime?
+  AccountData     AccountData?
+
+  @@map("userdetail")
+}
