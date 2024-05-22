@@ -4,6 +4,8 @@ import { Prisma, UserDetail } from "@prisma/client";
 import { comparePassword, hashPassword } from "../lib/bcrypt";
 import generateReferalCode from "../lib/referalCode";
 import { toLowerCase } from "../utils/toLowerCase";
+import { TAccountData } from "../model/user.model";
+import { createToken } from "../lib/jwt";
 
 class UserService {
   public model = prisma.accountData;
@@ -75,6 +77,34 @@ class UserService {
         email: email,
       },
     });
+  }
+
+  async userLogin(req: Request) {
+    const { email, password } = req.body;
+
+    // const select: Prisma.AccountDataSelectScalar = {
+    //   id: true,
+    //   email: true,
+    //   password: true,
+    // };
+
+    const data = (await prisma.accountData.findFirst({
+      where: {
+        email: email,
+        password: password,
+      },
+    })) as TAccountData;
+
+    if (!data?.password) throw new Error("wrong email or password");
+    const checkUser = await comparePassword(data.password, password);
+    if (!checkUser) throw new Error("incorrect password");
+
+    delete data.password;
+
+    const accessToken = createToken(data, "1hr");
+    const refreshToken = createToken({ id: data.id }, "20 hr");
+
+    return { accessToken, refreshToken };
   }
 }
 export default new UserService();

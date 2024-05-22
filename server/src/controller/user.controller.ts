@@ -13,5 +13,30 @@ export class UserController {
       next(error);
     }
   }
+
+  async login(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { accessToken, refreshToken } = await UserService.userLogin(req);
+
+      res
+        .cookie("access token", accessToken)
+        .cookie("refresh token", refreshToken)
+        .send({
+          message: "user login",
+        });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async validateUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      res.send({
+        message:"success"
+      })
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 export default new UserController();
