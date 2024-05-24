@@ -19,15 +19,16 @@ enum Type {
 }
 
 model AccountData {
-  id        Int        @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   fullName  String
-  email     String     @unique
+  email     String      @unique
   password  String?
   type      Type
   noPhone   String
-  userData  UserDetail @relation(fields: [id], references: [id])
-  updatedAt DateTime   @updatedAt
-  createdAt DateTime   @default(now())
+  userData  UserDetail  @relation(fields: [id], references: [id])
+  updatedAt DateTime    @updatedAt
+  createdAt DateTime    @default(now())
+  PostEvent PostEvent[]
 
   @@index([email])
   @@map("accountdata")
@@ -43,4 +44,62 @@ model UserDetail {
   AccountData     AccountData?
 
   @@map("userdetail")
+}
+
+enum Status {
+  Publish
+  Hidden
+}
+
+enum Category {
+  Concert
+  Expo
+  Play
+  Workshop
+  Sport
+}
+
+enum City {
+  Jakarta
+  Bogor
+  Depok
+  Tangerang
+  Bekasi
+}
+
+model PostEvent {
+  id         Int         @id @default(autoincrement())
+  adminId    Int
+  admin      AccountData @relation(fields: [adminId], references: [id])
+  title      String
+  status     Status
+  category   Category
+  location   String
+  imgEvent   String?
+  date       DateTime
+  startTime  DateTime
+  finishTime DateTime
+  city       City
+  desc       String
+  updatedAt  DateTime    @updatedAt
+  createdAt  DateTime    @default(now())
+  seats      Seat[]
+
+  @@map("postevent")
+}
+
+model Seat {
+  id          Int        @id @default(autoincrement())
+  imgSeat     String?
+  seatType    String
+  maxSeat     String
+  price       Float
+  promo       Float?
+  promoPrice  Float?
+  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime   @default(now())
+  events      PostEvent? @relation(fields: [postEventId], references: [id])
+  postEventId Int?       @unique
+
+  @@map("seat")
 }

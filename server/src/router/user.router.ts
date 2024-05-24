@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { Router } from "express";
 import userController from "../controller/user.controller";
 import { verifyUser } from "../middlewares/auth.middleware";
 

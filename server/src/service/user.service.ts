@@ -82,21 +82,18 @@ class UserService {
   async userLogin(req: Request) {
     const { email, password } = req.body;
 
-    // const select: Prisma.AccountDataSelectScalar = {
-    //   id: true,
-    //   email: true,
-    //   password: true,
-    // };
-
     const data = (await prisma.accountData.findFirst({
       where: {
         email: email,
-        password: password,
       },
     })) as TAccountData;
 
-    if (!data?.password) throw new Error("wrong email or password");
-    const checkUser = await comparePassword(data.password, password);
+    if (!data) throw new Error("wrong email");
+    const checkUser = await comparePassword(String(data.password), password);
+    console.log("====================================");
+    console.log(data);
+    console.log(req.body, checkUser);
+    console.log("====================================");
     if (!checkUser) throw new Error("incorrect password");
 
     delete data.password;

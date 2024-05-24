@@ -1,6 +1,7 @@
 import express, { Application, NextFunction, Request, Response } from "express";
 import { PORT } from "./config/config";
 import UserRouter from "./router/user.router";
+import eventRouter from "./router/event.router";
 
 export class App {
   private app: Application;
@@ -16,6 +17,7 @@ export class App {
       res.send("welcome to api with prisma API");
     });
     this.app.use("/user", UserRouter.getRouter());
+    this.app.use("/posts", eventRouter.getRouter());
   }
   private errorHandler() {
     this.app.use(

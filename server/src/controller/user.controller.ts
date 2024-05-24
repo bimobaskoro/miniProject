@@ -32,8 +32,8 @@ export class UserController {
   async validateUser(req: Request, res: Response, next: NextFunction) {
     try {
       res.send({
-        message:"success"
-      })
+        message: "success",
+      });
     } catch (error) {
       next(error);
     }

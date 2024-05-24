@@ -11,7 +11,7 @@ declare module "express-serve-static-core" {
 
 export const verifyUser = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = req.headers.authorization?.replace("Bearer", "") || "";
+    const token = req.headers.authorization?.replace("Bearer ", "") || "";
 
     req.accountData = verify(token, SECRET_KEY) as TAccountData;
 
