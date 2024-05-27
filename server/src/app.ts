@@ -1,8 +1,8 @@
 import express, { Application, NextFunction, Request, Response } from "express";
-import { PORT } from "./config/config";
+import { PORT, corsOptions } from "./config/config";
 import UserRouter from "./router/user.router";
 import eventRouter from "./router/event.router";
-
+import cors from "cors";
 export class App {
   private app: Application;
   constructor() {
@@ -32,7 +32,9 @@ export class App {
   private configure() {
     this.app.use(express.json());
     this.app.use(express.urlencoded());
+    this.app.use(cors(corsOptions));
   }
+
   public start() {
     this.app.listen(PORT, () => {
       console.log("api is running on port", PORT);
