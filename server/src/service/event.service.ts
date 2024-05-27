@@ -172,23 +172,33 @@ class EventService {
     const { id } = req.params;
 
     try {
-      const event = await prisma.postEvent.findUnique({
+
+      const event = await prisma.seat.delete({
         where: { id: parseInt(id) },
-        include: { seats: true },
       });
 
-      if (!event) {
-        throw new Error("Event not found");
-      }
+      console.log(event);
+      return event
+      
+      // const event = await prisma.postEvent.findUnique({
+      //   where: { id: parseInt(id) },
+      //   include: { seats: true },
+      // });
 
-      const seatId = event.seats.map((e) => e.id);
-      console.log(seatId);
+      // console.log(event);
+      
 
-      await prisma.seat.deleteMany({
-        where: { id: { in: seatId } },
-      });
+      // if (!event) {
+      //   throw new Error("Event not found");
+      // }
 
-      return event;
+      // const seatId = event.seats.map((e) => e.id);
+
+      // await prisma.seat.deleteMany({
+      //   where: { id: { in: seatId } },
+      // });
+
+      // return event;
     } catch (error) {
       console.error("Seats not found", error);
       throw new Error("Delete Seats fail");
