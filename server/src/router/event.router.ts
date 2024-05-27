@@ -10,7 +10,8 @@ class PostEvent {
   }
 
   intializedRoutes() {
-    this.router.post("/", verifyUser, eventController.postEvent);
+    this.router.post("/event", verifyUser, eventController.postEvent);
+    this.router.post("/seat/:eventId", eventController.postSeat);
     this.router.get("/:adminId", eventController.eventGetByID);
     this.router.patch("/:id", eventController.updateGetById);
   }

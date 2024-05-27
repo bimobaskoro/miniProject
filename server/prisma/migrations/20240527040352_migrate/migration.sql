@@ -52,7 +52,7 @@ CREATE TABLE `seat` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `imgSeat` VARCHAR(191) NULL,
     `seatType` VARCHAR(191) NOT NULL,
-    `maxSeat` VARCHAR(191) NOT NULL,
+    `maxSeat` DOUBLE NOT NULL,
     `price` DOUBLE NOT NULL,
     `promo` DOUBLE NULL,
     `promoPrice` DOUBLE NULL,
@@ -60,7 +60,6 @@ CREATE TABLE `seat` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `postEventId` INTEGER NULL,
 
-    UNIQUE INDEX `seat_postEventId_key`(`postEventId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

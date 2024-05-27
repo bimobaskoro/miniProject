@@ -1,6 +1,6 @@
 import { Request } from "express";
 import { prisma } from "../lib/prisma";
-import { Prisma, PostEvent } from "@prisma/client";
+import { Prisma, PostEvent, Seat } from "@prisma/client";
 
 class EventService {
   async createEvent(req: Request) {
@@ -15,28 +15,28 @@ class EventService {
       date: dateString,
       startTime: startTimeString,
       finishTime: finishTimeString,
-      seatType,
-      maxSeat,
-      price,
-      promo,
-      promoPrice,
+      // seatType,
+      // maxSeat,
+      // price,
+      // promo,
+      // promoPrice,
     } = req.body;
 
-    const priceFloat = parseFloat(price);
-    const promoFloat = parseFloat(promo);
+    // const priceFloat = parseFloat(price);
+    // const promoFloat = parseFloat(promo);
 
     const date = new Date(dateString);
     const startTime = new Date(startTimeString);
     const finishTime = new Date(finishTimeString);
 
     await prisma.$transaction(async (prisma) => {
-      const createdSeats: Prisma.SeatCreateInput = {
-        seatType,
-        maxSeat,
-        price: priceFloat,
-        promo: promoFloat,
-        promoPrice: priceFloat - promoFloat,
-      };
+      // const createdSeats: Prisma.SeatCreateInput = {
+      //   seatType,
+      //   maxSeat,
+      //   price: priceFloat,
+      //   promo: promoFloat,
+      //   promoPrice: priceFloat - promoFloat,
+      // };
 
       const eventData: Prisma.PostEventCreateInput = {
         title,
@@ -49,9 +49,9 @@ class EventService {
         date,
         startTime,
         finishTime,
-        seats: {
-          create: createdSeats,
-        },
+        // seats: {
+        //   create: createdSeats,
+        // },
       };
       const createdEvent = await prisma.postEvent.create({
         data: eventData,
@@ -59,6 +59,32 @@ class EventService {
 
       return createdEvent;
     });
+  }
+
+  async createSeat(req: Request) {
+    const eventId = parseInt(req.params.eventId);
+    const { seats }: { seats: any[] } = req.body;
+    console.log("====================================");
+    console.log(seats);
+    console.log("====================================");
+    if (!Array.isArray(seats)) throw new Error("Invalid Input");
+
+    const createdSeats = seats.map((seat: any) => {
+      const priceFloat = parseFloat(seat.price);
+      const promoFloat = seat.promo ? parseFloat(seat.promo) : 0;
+
+      return {
+        ...seat,
+        promoPrice: priceFloat - promoFloat,
+        postEventId: eventId,
+      };
+    });
+
+    const seat = await prisma.seat.createMany({
+      data: createdSeats,
+    });
+
+    return seat;
   }
 
   async getEventsByAdminId(adminId: number): Promise<PostEvent[]> {
@@ -96,13 +122,13 @@ class EventService {
           include: { seats: true },
         });
 
-        console.log("Updated Event:", updatedEvent);
-
         if (eventData.seats && Array.isArray(eventData.seats)) {
           const seatUpdates = eventData.seats.map((seat: any) => {
+            // Jika seat memiliki id, lakukan upsert
             return prisma.seat.upsert({
               where: { id: seat.id },
               update: {
+                id: seat.id,
                 imgSeat: seat.imgSeat,
                 seatType: seat.seatType,
                 maxSeat: seat.maxSeat,

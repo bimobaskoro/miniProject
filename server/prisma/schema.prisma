@@ -92,14 +92,14 @@ model Seat {
   id          Int        @id @default(autoincrement())
   imgSeat     String?
   seatType    String
-  maxSeat     String
+  maxSeat     Float
   price       Float
   promo       Float?
   promoPrice  Float?
   updatedAt   DateTime   @updatedAt
   createdAt   DateTime   @default(now())
-  events      PostEvent? @relation(fields: [postEventId], references: [id])
-  postEventId Int?       @unique
+  PostEvent   PostEvent? @relation(fields: [postEventId], references: [id])
+  postEventId Int?
 
   @@map("seat")
 }
