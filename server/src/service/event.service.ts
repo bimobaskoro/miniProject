@@ -73,6 +73,39 @@ class EventService {
     });
     return events;
   }
+
+  async deleteEvent(req: Request): Promise<PostEvent> {
+    const { id } = req.params;
+    return await prisma.postevent.delete({
+      where: { id: parseInt(id) },
+    });
+  }
+
+  async deleteSeats(req: Request): Promise<PostEvent | null> {
+    const { id } = req.params;
+
+    try {
+      const event = await prisma.postevent.findUnique({
+        where: { id: parseInt(id) },
+        include: { seats: true },
+      });
+
+      if (!event) {
+        throw new Error("Event not found");
+      }
+
+      const seatsId = event.seats.map((Seat) => seat.id);
+
+      await prisma.seat.deleteMany({
+        where: { id: { in: seatIds } },
+      });
+
+      return event;
+    } catch (error) {
+      console.error("Error deleting seats:", error);
+      return null;
+    }
+  }
 }
 
 export default new EventService();
