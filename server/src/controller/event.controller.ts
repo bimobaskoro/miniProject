@@ -26,22 +26,12 @@ export class EventController {
       next(error);
     }
   }
-  async deleteEventById(req: Request, res: Response, next: NextFunction) {
-    try {
-      await eventService.deleteEvent(req);
-      return res.send({
-        message: "event get by id has been deleted",
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
 
-  async deleteSeatsById(req: Request, res: Response, next: NextFunction) {
+  async updateGetById(req: Request, res: Response, next: NextFunction) {
     try {
-      await eventService.deleteSeats;
+      await eventService.updateEventById(req);
       return res.send({
-        message: "seats has been deleted",
+        message: "event has been update",
       });
     } catch (error) {
       next(error);
