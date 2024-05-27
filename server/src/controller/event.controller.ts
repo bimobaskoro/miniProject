@@ -49,6 +49,28 @@ export class EventController {
       next(error);
     }
   }
+
+  async deleteEventById(req: Request, res: Response, next: NextFunction) {
+    try {
+      await eventService.deleteEvent(req);
+      return res.send({
+        message: "Event deleted by ID",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteSeatsById(req: Request, res: Response, next: NextFunction) {
+    try {
+      await eventService.deleteSeats(req);
+      return res.send({
+        message: "Seats have been deleted",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new EventController();

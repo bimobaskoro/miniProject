@@ -1,6 +1,6 @@
 import { Request } from "express";
 import { prisma } from "../lib/prisma";
-import { Prisma, PostEvent, Seat } from "@prisma/client";
+import { Prisma, PostEvent } from "@prisma/client";
 
 class EventService {
   async createEvent(req: Request) {
@@ -158,6 +158,39 @@ class EventService {
     } catch (error) {
       console.error("Update Failed:", error);
       throw new Error("Update Failed");
+    }
+  }
+
+  async deleteEvent(req: Request) {
+    const { id } = req.params;
+    return await prisma.postEvent.delete({
+      where: { id: parseInt(id) },
+    });
+  }
+
+  async deleteSeats(req: Request) {
+    const { id } = req.params;
+
+    try {
+      const event = await prisma.postEvent.findUnique({
+        where: { id: parseInt(id) },
+        include: { seats: true },
+      });
+
+      if (!event) {
+        throw new Error("Event not found");
+      }
+
+      const seatId = event.seats.map((e) => e.id);
+
+      await prisma.seat.deleteMany({
+        where: { id: { in: seatId } },
+      });
+
+      return event;
+    } catch (error) {
+      console.error("Seats not found", error);
+      throw new Error("Delete Seats fail");
     }
   }
 }
