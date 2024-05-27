@@ -13,6 +13,16 @@ class PostEvent {
     this.router.post("/", verifyUser, eventController.postEvent);
     this.router.get("/:adminId", eventController.eventGetByID);
     this.router.patch("/:id", eventController.updateGetById);
+    this.router.delete(
+      "/event/:id",
+      verifyUser,
+      eventController.deleteEventById
+    );
+    this.router.delete(
+      "/seats/:id",
+      verifyUser,
+      eventController.deleteSeatsById
+    );
   }
   getRouter() {
     return this.router;

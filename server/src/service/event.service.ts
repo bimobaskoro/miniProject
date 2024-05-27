@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { prisma } from "../lib/prisma";
 import { Prisma, PostEvent } from "@prisma/client";
+import { TSeat } from "../model/seat.model";
 
 class EventService {
   async createEvent(req: Request) {
@@ -134,5 +135,38 @@ class EventService {
       throw new Error("Update Failed");
     }
   }
-}
+
+  async deleteEvent(req: Request): Promise<PostEvent> {
+    const { id } = req.params;
+    return await prisma.postEvent.delete({
+      where: { id: parseInt(id) },
+    });
+  }
+
+  async deleteSeats(req: Request): Promise<PostEvent | null> {
+    const { id } = req.params;
+
+    try {
+      const event = await prisma.postEvent.findUnique({
+        where: { id: parseInt(id) },
+        include: { seats: true },
+      });
+
+      if (!event) {
+        throw new Error("Event not found");
+      }
+
+      const seatId = event.seats.map((seat) => seat.id);
+
+      await prisma.seat.deleteMany({
+        where: { id: { in: seatId } },
+      });
+
+      return event;
+    } catch (error) {
+      console.error("Seats not found", error);
+      throw new Error("Delete Seats fail");
+    }
+  }
+} 
 export default new EventService();
