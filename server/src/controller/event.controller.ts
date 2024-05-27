@@ -26,6 +26,17 @@ export class EventController {
       next(error);
     }
   }
+
+  async updateGetById(req: Request, res: Response, next: NextFunction) {
+    try {
+      await eventService.updateEventById(req);
+      return res.send({
+        message: "event has been update",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new EventController();
