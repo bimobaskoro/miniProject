@@ -182,6 +182,7 @@ class EventService {
       }
 
       const seatId = event.seats.map((e) => e.id);
+      console.log(seatId);
 
       await prisma.seat.deleteMany({
         where: { id: { in: seatId } },

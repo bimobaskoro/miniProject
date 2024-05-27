@@ -20,7 +20,7 @@ class PostEvent {
       eventController.deleteEventById
     );
     this.router.delete(
-      "/seats/:id",
+      "/:eventId/seats/:id",
       verifyUser,
       eventController.deleteSeatsById
     );

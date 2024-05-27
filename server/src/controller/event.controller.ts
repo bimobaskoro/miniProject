@@ -6,7 +6,7 @@ export class EventController {
     try {
       const data = await eventService.createEvent(req);
       res.status(201).send({
-        message: "Even has been post",
+        message: "Event has been post",
         data,
       });
     } catch (error) {
