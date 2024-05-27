@@ -136,14 +136,14 @@ class EventService {
     }
   }
 
-  async deleteEvent(req: Request): Promise<PostEvent> {
+  async deleteEvent(req: Request) {
     const { id } = req.params;
     return await prisma.postEvent.delete({
       where: { id: parseInt(id) },
     });
   }
 
-  async deleteSeats(req: Request): Promise<PostEvent | null> {
+  async deleteSeats(req: Request) {
     const { id } = req.params;
 
     try {
@@ -156,7 +156,7 @@ class EventService {
         throw new Error("Event not found");
       }
 
-      const seatId = event.seats.map((seat) => seat.id);
+      const seatId = event.seats.map((e) => e.id);
 
       await prisma.seat.deleteMany({
         where: { id: { in: seatId } },
