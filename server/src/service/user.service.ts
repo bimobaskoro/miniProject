@@ -23,6 +23,7 @@ class UserService {
     } = toLowerCase(req);
 
     toLowerCase(req);
+
     await prisma.$transaction(async (prisma) => {
       const expDate = new Date();
       expDate.setMonth(expDate.getMonth() + 3);
@@ -32,7 +33,8 @@ class UserService {
           OR: [{ email }],
         },
       });
-      if (existingUser.length) throw new Error("username/email already used");
+
+      if (existingUser.length) throw new Error("email already used");
       const hashPass = await hashPassword(password);
 
       if (referalCode) {
@@ -67,6 +69,9 @@ class UserService {
           create: userdata,
         },
       };
+      console.log("====================================");
+      console.log(req.body);
+      console.log("====================================");
 
       await prisma.accountData.create({
         data: accdata,
