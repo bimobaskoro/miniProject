@@ -1,6 +1,23 @@
-import Image from "next/image";
+"use client";
+import { useFormik } from "formik";
+import { useAppDispatch } from "../../hooks";
+import { userLogin } from "./_middleware/auth.middleware";
+import { TUser } from "./_models/user.mode";
+import { useRouter } from "next/router";
+import React from "react";
+import { useDispatch } from "react-redux";
 
 export default function Login() {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    onSubmit: async (values: TUser) => {
+    
+  });
   return (
     <>
       <div className="flex justify-center items-center h-screen">

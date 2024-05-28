@@ -1,10 +1,14 @@
 "use client";
 import axios from "axios";
+import { axiosInstance } from "../_lib/axios";
 import { useFormik } from "formik";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React from "react";
+import Swal from "sweetalert2";
 
 export default function Register() {
+  const router = useRouter();
   const formik = useFormik({
     initialValues: {
       fullName: "",
@@ -15,15 +19,25 @@ export default function Register() {
     },
     onSubmit: async (values) => {
       try {
-        const response = await axios.post(
-          "http://localhost:8001/user/v2",
-          values
-        );
+        const response = await axiosInstance().post("/user/v2", values);
+        Swal.fire({
+          icon: "success",
+          title: "Success Register",
+          text: "Your account has been successfully registered",
+        });
+
         console.log("====================================");
         console.log("Success", response.data);
         console.log("====================================");
+
+        router.push("/");
       } catch (error) {
         console.error("Error:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Email has been registered",
+        });
       }
     },
   });
