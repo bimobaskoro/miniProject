@@ -3,21 +3,28 @@ import { axiosInstance } from "../_lib/axios";
 import { TUser } from "../_models/user.mode";
 import { login } from "../_lib/redux/slice/user.slice";
 import { setAuthCookie } from "../_lib/cookies";
-import { deleteCookie } from "cookies-next";
+import { deleteCookie, getCookie } from "cookies-next";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 export const userLogin = ({ email, password }: TUser) => {
   return async (dispatch: Dispatch) => {
     try {
-      const rest = await axiosInstance().get("/user/v1", {
-        params: { email, password },
-      });
-      const user = rest.data[0];
-      console.log(user);
+      await axiosInstance().post(
+        "/user/v1",
+        {
+          email: email,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
-      if (user.id) {
+      const access_token = getCookie("access_token") || "";
+      if (access_token) {
+        const user: TUser = jwtDecode(access_token);
         dispatch(login(user));
-        setAuthCookie(JSON.stringify(user), "auth");
       }
       return;
     } catch (err) {
@@ -31,19 +38,21 @@ export const userLogin = ({ email, password }: TUser) => {
   };
 };
 
-export const keepLogin = (storage: TUser) => {
+export const keepLogin = () => {
   return async (dispatch: Dispatch) => {
     try {
-      const res = await axiosInstance().get("/user/v", {
-        params: { email: storage.email },
-      });
-      const user = res.data[0];
-      console.log(user);
+      const token = getCookie("access_token");
+      if (!token) throw new Error("token not found");
+
+      const user = jwtDecode(token) as TUser;
 
       if (user.id) {
         dispatch(login(user));
       }
-      return;
+      return {
+        success: true,
+        message: "success",
+      };
     } catch (err: any) {
       deleteCookie("auth");
       alert("wrong email/password");

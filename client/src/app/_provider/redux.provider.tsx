@@ -3,7 +3,7 @@ import React from "react";
 import { Provider } from "react-redux";
 import { store } from "../_lib/redux/store";
 import AuthProvider from "./auth.provider";
-import RouteProvider from "./route.provider";
+// import RouteProvider from "./route.provider";
 
 export default function StoreProvider({
   children,
@@ -13,7 +13,7 @@ export default function StoreProvider({
   return (
     <Provider store={store}>
       <AuthProvider>
-        <RouteProvider>{children} </RouteProvider>
+        {/* <RouteProvider>{children} </RouteProvider> */}
       </AuthProvider>
     </Provider>
   );
