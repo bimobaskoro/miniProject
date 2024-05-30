@@ -13,7 +13,7 @@ export const userLogin = ({ email, password }: TUser) => {
       await axiosInstance().post(
         "/user/v1",
         {
-          email: email,
+          email,
           password,
         },
         {
@@ -29,9 +29,8 @@ export const userLogin = ({ email, password }: TUser) => {
       return;
     } catch (err) {
       if (err instanceof Error) {
-        console.log(err.message);
-        deleteCookie("auth");
-        alert("wrong email/password");
+        deleteCookie("access_token");
+        deleteCookie("refresh_token");
         return err.message;
       }
     }
@@ -54,8 +53,9 @@ export const keepLogin = () => {
         message: "success",
       };
     } catch (err: any) {
-      deleteCookie("auth");
-      alert("wrong email/password");
+      console.log(err);
+      deleteCookie("access_token");
+      deleteCookie("refresh_token");
 
       return err.message;
     }

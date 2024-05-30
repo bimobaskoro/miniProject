@@ -30,7 +30,7 @@ export default function Register() {
         console.log("Success", response.data);
         console.log("====================================");
 
-        router.push("/");
+        router.push("/login");
       } catch (error) {
         console.error("Error:", error);
         Swal.fire({

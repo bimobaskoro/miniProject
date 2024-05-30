@@ -7,7 +7,7 @@ export type TAccountData = {
   password?: string;
   noPhone: string;
   type: Type;
-};
+} | null;
 
 export type TUserDetail = {
   id: number;

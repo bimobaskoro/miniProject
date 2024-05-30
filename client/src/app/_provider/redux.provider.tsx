@@ -12,9 +12,7 @@ export default function StoreProvider({
 }) {
   return (
     <Provider store={store}>
-      <AuthProvider>
-        {/* <RouteProvider>{children} </RouteProvider> */}
-      </AuthProvider>
+      <AuthProvider>{children}</AuthProvider>
     </Provider>
   );
 }

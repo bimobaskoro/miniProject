@@ -95,18 +95,52 @@ class UserService {
 
     if (!data) throw new Error("wrong email");
     const checkUser = await comparePassword(String(data.password), password);
-    console.log("====================================");
-    console.log(data);
-    console.log(req.body, checkUser);
-    console.log("====================================");
+
     if (!checkUser) throw new Error("incorrect password");
 
     delete data.password;
 
-    const accessToken = createToken(data, "4hr");
+    const accessToken = createToken(data);
     const refreshToken = createToken({ id: data.id }, "20 hr");
 
     return { accessToken, refreshToken };
+  }
+  async validateUser(req: Request) {
+    console.log("masuk", req.accountData);
+
+    const user = await prisma.accountData.findUnique({
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        type: true,
+      },
+      where: {
+        id: req.accountData?.id,
+      },
+    });
+
+    return createToken(user, "1hr");
+  }
+
+  async userGetById(req: Request) {
+    const { id } = req.params;
+    const idNum = parseInt(id);
+    const data: TAccountData = await prisma.accountData.findUnique({
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        password: true,
+        noPhone: true,
+        type: true,
+      },
+      where: {
+        id: idNum,
+      },
+    });
+    if (!data) throw new Error("user not found");
+    return data as TAccountData;
   }
 }
 export default new UserService();
