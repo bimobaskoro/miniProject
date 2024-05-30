@@ -1,7 +1,10 @@
 import { Router } from "express";
 import userController from "../controller/user.controller";
 import { verifyUser } from "../middlewares/auth.middleware";
-// import { user_validator } from "../middlewares/joi.validator.middleware";
+import {
+  registerValidator,
+  loginValidator,
+} from "../middlewares/joi.validator.middleware";
 
 class UserRouter {
   private router: Router;
@@ -10,8 +13,8 @@ class UserRouter {
     this.initializedRoutes();
   }
   initializedRoutes() {
-    this.router.post("/v1", userController.login);
-    this.router.post("/v2", userController.register);
+    this.router.post("/v1", loginValidator, userController.login);
+    this.router.post("/v2", registerValidator, userController.register);
     this.router.get("/validate", verifyUser, userController.validateUser);
     this.router.get("/:id", userController.userGetById);
   }

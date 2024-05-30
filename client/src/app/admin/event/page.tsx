@@ -8,14 +8,55 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
+import * as React from "react";
+import { useRouter } from "next/router";
+import { useFormik } from "formik";
+import { axiosInstance } from "@/app/_lib/axios";
 
 export default function event() {
+  const [date, setDate] = React.useState<Date>();
   const [step, setStep] = useState(1);
-
+  const [inputCount, setInputCount] = useState<number>(0);
+  const route = useRouter();
+  const formik = useFormik({
+    initialValues: {
+      title: "",
+      category: "",
+      location: "",
+      imgEvent: "",
+      date: "",
+      startTime: "",
+      finishTime: "",
+      city: "",
+      desc: "",
+    },
+    onSubmit: async (values) => {
+      try {
+        const response = await axiosInstance().post("/post/event", values);
+        console.log("====================================");
+        console.log("Success", response.data);
+        console.log("====================================");
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    },
+  });
   const handleNext = (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setStep((prevStep) => prevStep + 1);
@@ -24,6 +65,15 @@ export default function event() {
   const handleBack = (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setStep((prevStep) => prevStep - 1);
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(event.target.value, 10);
+    if (!isNaN(value)) {
+      setInputCount(value);
+    } else {
+      setInputCount(0);
+    }
   };
 
   const user = useAppSelector((state) => state.auth);
@@ -204,16 +254,16 @@ export default function event() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogDescription className="overflow-y-auto">
+              <DialogDescription className="overflow-y-auto ">
                 <form className="max-w-md mx-auto pt-5">
                   {step === 1 ? (
-                    <>
+                    <div className="h-[80vh] overflow-auto">
                       <div className="text-center relative z-0 w-full mb-5 group text-black font-bold text-lg">
                         Upload Your Event
                       </div>
                       <div className="relative z-0 w-full mb-5 group">
                         <input
-                          type="title"
+                          type="text"
                           name="title"
                           id="title"
                           className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
@@ -245,8 +295,8 @@ export default function event() {
                       </div>
                       <div className="relative z-0 w-full mb-5 group">
                         <div className="grid w-full max-w-sm items-center gap-1.5">
-                          <Label htmlFor="picture">Event Picture</Label>
-                          <Input id="picture" type="file" />
+                          <Label htmlFor="imgEvent">Event Picture</Label>
+                          <Input id="imgEvent" type="file" />
                         </div>
                       </div>
                       <div className="relative z-0 w-full mb-5 group">
@@ -282,6 +332,111 @@ export default function event() {
                         </select>
                       </div>
                       <div className="relative z-0 w-full mb-5 group">
+                        <label>
+                          Date Event
+                          <br />
+                        </label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              id="date"
+                              variant={"outline"}
+                              className={cn(
+                                "w-[280px] justify-start text-left font-normal",
+                                !date && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {date ? (
+                                format(date, "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0">
+                            <Calendar
+                              mode="single"
+                              selected={date}
+                              onSelect={setDate}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      <div className="relative z-0 w-full mb-5 group">
+                        <div className="grid-time">
+                          <div className="grid-time-item">
+                            <label
+                              htmlFor="time"
+                              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                              Select start time:
+                            </label>
+                            <div className="relative">
+                              <div className="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                                <svg
+                                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    fill-rule="evenodd"
+                                    d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
+                                    clip-rule="evenodd"
+                                  />
+                                </svg>
+                              </div>
+                              <input
+                                type="time"
+                                id="startTime"
+                                className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                min="09:00"
+                                max="18:00"
+                                value="00:00"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div className="grid-time-item">
+                            <label
+                              htmlFor="time"
+                              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                              Select finish time:
+                            </label>
+                            <div className="relative">
+                              <div className="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                                <svg
+                                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    fill-rule="evenodd"
+                                    d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
+                                    clip-rule="evenodd"
+                                  />
+                                </svg>
+                              </div>
+                              <input
+                                type="time"
+                                id="finishTime"
+                                className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                min="09:00"
+                                max="18:00"
+                                value="00:00"
+                                required
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="relative z-0 w-full mb-5 group">
                         <div className="grid w-full gap-1.5">
                           <Label htmlFor="desc">Description</Label>
                           <Textarea
@@ -290,12 +445,137 @@ export default function event() {
                           />
                         </div>
                       </div>
-                    </>
+                    </div>
                   ) : (
-                    <>
-                      This is the content of the second step. Provide additional
-                      information or actions here.
-                    </>
+                    <div className=" h-[50vh] overflow-auto">
+                      <div className="text-center relative z-0 w-full mb-5 group text-black font-bold text-lg">
+                        Upload Your Seat
+                      </div>
+                      <div className="relative z-0 w-full mb-5 group">
+                        <div className="grid w-full max-w-sm items-center gap-1.5">
+                          <Label htmlFor="imgSeat">Seat Picture</Label>
+                          <Input id="imgSeat" type="file" />
+                        </div>
+                      </div>
+                      <div className="relative z-0 w-full mb-5 group">
+                        <label
+                          htmlFor="maxSeat"
+                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        >
+                          Input Total Seat Type
+                        </label>
+                        <input
+                          type="number"
+                          id="maxSeat"
+                          aria-describedby="helper-text-explanation"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          placeholder="90210"
+                          required
+                          onChange={handleInputChange}
+                        />
+                        <div id="inputContainer">
+                          {Array.from({ length: inputCount }, (_, index) => (
+                            <div key={index} className="pt-3">
+                              <div className="font-bold text-black">{`Seat ${
+                                index + 1
+                              }`}</div>
+                              <div className="grid-seat pt-1">
+                                <div className="grid-seat-item">
+                                  <div className="relative z-0 w-full mb-5 group">
+                                    <input
+                                      type="text"
+                                      name="seatType"
+                                      id="seatType"
+                                      className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                      placeholder=""
+                                      required
+                                    />
+                                    <label
+                                      htmlFor="seatType"
+                                      className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                    >
+                                      Type Seat
+                                    </label>
+                                  </div>
+                                </div>
+                                <div className="grid-seat-item">
+                                  <div className="relative z-0 w-full mb-5 group">
+                                    <input
+                                      type="number"
+                                      name="maxSeat"
+                                      id="maxSeat"
+                                      className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                      placeholder=""
+                                      required
+                                    />
+                                    <label
+                                      htmlFor="maxSeat"
+                                      className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                    >
+                                      Max Seat{" "}
+                                    </label>
+                                  </div>
+                                </div>
+                                <div className="grid-seat-item">
+                                  <div className="relative z-0 w-full mb-5 group">
+                                    <input
+                                      type="text"
+                                      name="price"
+                                      id="price"
+                                      className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                      placeholder=""
+                                      required
+                                    />
+                                    <label
+                                      htmlFor="price"
+                                      className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                    >
+                                      Price
+                                    </label>
+                                  </div>
+                                </div>
+                                <div className="grid-seat-item">
+                                  <div className="relative z-0 w-full mb-5 group">
+                                    <input
+                                      type="text"
+                                      name="promo"
+                                      id="promo"
+                                      className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                      placeholder=""
+                                      required
+                                    />
+                                    <label
+                                      htmlFor="promo"
+                                      className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                    >
+                                      Promo (Optional)
+                                    </label>
+                                  </div>
+                                </div>
+                                <div className="grid-seat-item">
+                                  <div className="relative z-0 w-full mb-5 group">
+                                    <input
+                                      type="text"
+                                      name="pricePromo"
+                                      id="pricePromo"
+                                      className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                      placeholder=""
+                                      disabled
+                                    />
+                                    <label
+                                      htmlFor="pricePromo"
+                                      className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                    >
+                                      Price Promo
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   )}
 
                   <div className="dialog-footer justify-between flex">
