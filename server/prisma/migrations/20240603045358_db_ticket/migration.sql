@@ -33,6 +33,7 @@ CREATE TABLE `postevent` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `adminId` INTEGER NOT NULL,
     `title` VARCHAR(191) NOT NULL,
+    `seatName` VARCHAR(191) NULL,
     `status` ENUM('Publish', 'Hidden') NOT NULL,
     `category` ENUM('Concert', 'Expo', 'Play', 'Workshop', 'Sport') NOT NULL,
     `location` VARCHAR(191) NOT NULL,
@@ -45,13 +46,26 @@ CREATE TABLE `postevent` (
     `updatedAt` DATETIME(3) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    UNIQUE INDEX `postevent_title_key`(`title`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `seat` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `adminId` INTEGER NOT NULL,
+    `nameSeat` VARCHAR(191) NOT NULL,
     `imgSeat` VARCHAR(191) NULL,
+    `updatedAt` DATETIME(3) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    UNIQUE INDEX `seat_nameSeat_key`(`nameSeat`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `seatdetail` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `seatType` VARCHAR(191) NOT NULL,
     `maxSeat` DOUBLE NOT NULL,
     `price` DOUBLE NOT NULL,
@@ -59,7 +73,7 @@ CREATE TABLE `seat` (
     `promoPrice` DOUBLE NULL,
     `updatedAt` DATETIME(3) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `postEventId` INTEGER NULL,
+    `seatId` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -71,4 +85,10 @@ ALTER TABLE `accountdata` ADD CONSTRAINT `accountdata_id_fkey` FOREIGN KEY (`id`
 ALTER TABLE `postevent` ADD CONSTRAINT `postevent_adminId_fkey` FOREIGN KEY (`adminId`) REFERENCES `accountdata`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `seat` ADD CONSTRAINT `seat_postEventId_fkey` FOREIGN KEY (`postEventId`) REFERENCES `postevent`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `postevent` ADD CONSTRAINT `postevent_seatName_fkey` FOREIGN KEY (`seatName`) REFERENCES `seat`(`nameSeat`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `seat` ADD CONSTRAINT `seat_adminId_fkey` FOREIGN KEY (`adminId`) REFERENCES `accountdata`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `seatdetail` ADD CONSTRAINT `seatdetail_seatId_fkey` FOREIGN KEY (`seatId`) REFERENCES `seat`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

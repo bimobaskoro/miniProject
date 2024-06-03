@@ -5,6 +5,7 @@ export type TPostEvent = {
   adminId: number;
   title: string;
   status: boolean;
+  seatName: string;
   category: string;
   location: string;
   city: string;

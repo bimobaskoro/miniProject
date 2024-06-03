@@ -5,6 +5,7 @@ import {
   eventValidator,
   seatValidator,
 } from "../middlewares/joi.validator.middleware";
+import { uploader, uploaderSeat } from "../lib/multer";
 
 class PostEvent {
   private router: Router;
@@ -16,23 +17,36 @@ class PostEvent {
   intializedRoutes() {
     this.router.post(
       "/event",
-      eventValidator,
+      // eventValidator,
       verifyUser,
+      uploader("POST", "post").single("imgEvent"),
       eventController.postEvent
     );
-    this.router.post("/seat/:eventId", seatValidator, eventController.postSeat);
-    this.router.get("/:adminId", eventController.eventGetByID);
-    this.router.patch("/:id", eventController.updateGetById);
-    this.router.delete(
-      "/event/:id",
+    this.router.post(
+      "/seat",
       verifyUser,
-      eventController.deleteEventById
+      uploaderSeat("POST", "post").single("imgSeat"),
+      // seatValidator,
+      eventController.postSeat
     );
-    this.router.delete(
-      "/:eventId/seats/:id",
-      verifyUser,
-      eventController.deleteSeatsById
+
+    this.router.get(
+      "/seat/:adminId",
+      // verifyUser,
+      eventController.getSeatByAdminId
     );
+    // this.router.get("/:adminId", eventController.eventGetByID);
+    // this.router.patch("/:id", eventController.updateGetById);
+    // this.router.delete(
+    //   "/event/:id",
+    //   verifyUser,
+    //   eventController.deleteEventById
+    // );
+    // this.router.delete(
+    //   "/:eventId/seats/:id",
+    //   verifyUser,
+    //   eventController.deleteSeatsById
+    // );
   }
   getRouter() {
     return this.router;

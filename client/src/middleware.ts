@@ -7,8 +7,6 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("refresh_token")?.value || "";
   const response = NextResponse.next();
 
-  console.log("halo");
-
   const validate = await axiosInstance()
     .get("/user/validate", {
       withCredentials: true,

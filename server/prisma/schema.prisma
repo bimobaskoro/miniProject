@@ -30,6 +30,7 @@ model AccountData {
   updatedAt   DateTime    @updatedAt
   createdAt   DateTime    @default(now())
   PostEvent   PostEvent[]
+  Seat        Seat[]
 
   @@index([email])
   @@map("accountdata")
@@ -72,7 +73,9 @@ model PostEvent {
   id         Int         @id @default(autoincrement())
   adminId    Int
   admin      AccountData @relation(fields: [adminId], references: [id])
-  title      String
+  title      String      @unique
+  seatName   String?
+  Seat       Seat?       @relation(fields: [seatName], references: [nameSeat])
   status     Status
   category   Category
   location   String
@@ -84,23 +87,35 @@ model PostEvent {
   desc       String
   updatedAt  DateTime    @updatedAt
   createdAt  DateTime    @default(now())
-  seats      Seat[]
 
   @@map("postevent")
 }
 
 model Seat {
-  id          Int        @id @default(autoincrement())
-  imgSeat     String?
-  seatType    String
-  maxSeat     Float
-  price       Float
-  promo       Float?
-  promoPrice  Float?
-  updatedAt   DateTime   @updatedAt
-  createdAt   DateTime   @default(now())
-  PostEvent   PostEvent? @relation(fields: [postEventId], references: [id])
-  postEventId Int?
+  id         Int          @id @default(autoincrement())
+  adminId    Int
+  admin      AccountData  @relation(fields: [adminId], references: [id])
+  nameSeat   String       @unique
+  imgSeat    String?
+  SeatDetail SeatDetail[]
+  updatedAt  DateTime     @updatedAt
+  createdAt  DateTime     @default(now())
+  PostEvent  PostEvent[]
 
   @@map("seat")
+}
+
+model SeatDetail {
+  id         Int      @id @default(autoincrement())
+  seatType   String
+  maxSeat    Float
+  price      Float
+  promo      Float?
+  promoPrice Float?
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  Seat       Seat?    @relation(fields: [seatId], references: [id])
+  seatId     Int?
+
+  @@map("seatdetail")
 }

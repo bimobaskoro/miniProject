@@ -1,7 +1,12 @@
 export type TSeat = {
   id: number;
-  seatType: string;
+  nameSeat: string;
   imgSeat: string;
+};
+
+export type TSeatDetail = {
+  id: number;
+  seatType: string;
   maxSeat: number;
   price: number;
   promo: number;
