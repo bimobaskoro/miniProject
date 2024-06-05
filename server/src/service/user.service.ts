@@ -6,6 +6,7 @@ import generateReferalCode from "../lib/referalCode";
 import { toLowerCase } from "../utils/toLowerCase";
 import { TAccountData } from "../model/user.model";
 import { createToken } from "../lib/jwt";
+import { handleVerification } from "../lib/nodemailer";
 
 class UserService {
   public model = prisma.accountData;
@@ -73,10 +74,12 @@ class UserService {
       console.log(req.body);
       console.log("====================================");
 
-      await prisma.accountData.create({
+      const newUser = (await prisma.accountData.create({
         data: accdata,
-      });
+      })) as TAccountData;
+      handleVerification(newUser);
     });
+
     return await prisma.accountData.findUnique({
       where: {
         email: email,

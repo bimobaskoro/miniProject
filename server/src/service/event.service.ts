@@ -1,6 +1,6 @@
 import { Request } from "express";
 import { prisma } from "../lib/prisma";
-import { Prisma, PostEvent, SeatDetail } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 class EventService {
   async createEvent(req: Request) {
@@ -9,9 +9,8 @@ class EventService {
       title,
       desc,
       status,
-      seatName,
-      imgEvent,
       category,
+      promo,
       location,
       city,
       date: dateString,
@@ -19,103 +18,47 @@ class EventService {
       finishTime: finishTimeString,
     } = req.body;
 
-    const file = req.file;
-    const date = new Date(dateString);
-    const startTime = new Date(startTimeString);
-    const finishTime = new Date(finishTimeString);
+    return await prisma.$transaction(async (prisma) => {
+      try {
+        const file = req.file;
+        const date = new Date(dateString);
+        const startTime = new Date(startTimeString);
+        const finishTime = new Date(finishTimeString);
 
-    await prisma.$transaction(async (prisma) => {
-      const eventData: Prisma.PostEventCreateInput = {
-        title,
-        admin: { connect: { id: Number(adminId) } },
-        desc,
-        status,
-        Seat: seatName ? { connect: { nameSeat: seatName } } : undefined,
-        imgEvent: file?.filename,
-        category,
-        location,
-        city,
-        date,
-        startTime,
-        finishTime,
-      };
-      const createdEvent = await prisma.postEvent.create({
-        data: eventData,
-      });
-
-      console.log("====================================");
-      console.log(createdEvent);
-      console.log("====================================");
-      return createdEvent;
-    });
-  }
-
-  async createSeat(req: Request) {
-    const adminId = req.accountData?.id;
-    if (adminId == undefined) {
-      throw new Error("admin id not found");
-    }
-    const { nameSeat, imgSeat, SeatDetail } = req.body;
-    const file = req.file;
-
-    try {
-      const seat = await prisma.seat.create({
-        data: {
-          nameSeat,
+        const eventData: Prisma.EventCreateInput = {
+          title,
+          admin: { connect: { id: Number(adminId) } },
+          desc,
+          status,
           imgSeat: file?.filename,
-          adminId,
-          SeatDetail: {
-            createMany: {
-              data: SeatDetail.map((e: any) => {
-                return {
-                  ...e,
-                  promoPrice: parseFloat(e.price) - parseFloat(e.promo),
-                };
-              }),
-            },
-          },
-        },
-        include: {
-          SeatDetail: true,
-        },
-      });
+          imgEvent: file?.filename,
+          promo,
+          date,
+          location,
+          city,
+          startTime,
+          finishTime,
+          category,
+        };
+        const newEvent = await prisma.event.create({
+          data: eventData,
+        });
 
-      console.log("====================================");
-      console.log(seat);
-      console.log("====================================");
-      return seat;
-    } catch (error) {
-      console.log("====================================");
-      console.log("Seat Error", error);
-      console.log("====================================");
-    }
-  }
+        const priceEventList: Prisma.EventPriceCreateManyInput =
+          req.body.eventDetail.map((detail: any) => ({
+            categoryEvent: detail.categoryEvent,
+            qty: detail.qty,
+            price: detail.price,
+            eventId: newEvent.id,
+          }));
 
-  async getSeatByAdminId(req: Request) {
-    const { adminId } = req.params;
-    const seat = await prisma.seat.findMany({
-      select: {
-        nameSeat: true,
-      },
-      where: {
-        adminId: parseInt(adminId),
-      },
+        await prisma.eventPrice.createMany({
+          data: priceEventList,
+        });
+      } catch (error) {
+        throw error;
+      }
     });
-    return seat;
-  }
-
-  async getSeatByEventId(req: Request) {
-    const { eventId } = req.params;
-    const whereSeats = await prisma.postEvent.findUnique({
-      select: {
-        Seat: true,
-      },
-      where: {
-        id: parseInt(eventId),
-      },
-    });
-
-    return whereSeats;
   }
 }
 

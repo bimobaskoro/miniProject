@@ -13,15 +13,17 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
-import { axiosInstance } from "@/app/_utils/config";
+import { axiosInstance } from "@/app/_lib/axios";
+import Swal from "sweetalert2";
 
 export default function SeatComponent() {
+  const user = useAppSelector((state) => state.auth);
   const [inputCount, setInputCount] = useState<number>(0);
   const router = useRouter();
   const formik = useFormik({
     initialValues: {
       nameSeat: "",
-      imgSeat: null,
+      imgSeat: "",
       seatType: "",
       maxSeat: "",
       price: "",
@@ -30,18 +32,7 @@ export default function SeatComponent() {
     },
     onSubmit: async (values) => {
       try {
-        const formData = new FormData();
-        formData.append("nameSeat", values.nameSeat);
-        if (values.imgSeat) {
-          formData.append("imgSeat", values.imgSeat);
-        }
-        formData.append("seatType", values.seatType);
-        formData.append("maxSeat", values.maxSeat);
-        formData.append("price", values.price);
-        formData.append("promo", values.promo);
-        formData.append("pricePromo", values.pricePromo);
-
-        const response = await axiosInstance().post("/posts/seat", formData, {
+        const response = await axiosInstance().post("/posts/seat", values, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -52,7 +43,13 @@ export default function SeatComponent() {
         console.log("====================================");
         router.push("/admin/seat");
       } catch (error) {
-        console.error("Error:", error);
+        console.log("Error:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `${error}`,
+        });
+        router.push("/admin/seat");
       }
     },
   });
@@ -117,7 +114,7 @@ export default function SeatComponent() {
                 <Label htmlFor="inputSeat">Input Seat</Label>
                 <input
                   type="number"
-                  id="maxSeat"
+                  id="inputSeat"
                   aria-describedby="helper-text-explanation"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="90210"

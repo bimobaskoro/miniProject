@@ -5,15 +5,22 @@ export type TPostEvent = {
   adminId: number;
   title: string;
   status: boolean;
-  seatName: string;
   category: string;
   location: string;
   city: string;
   date: Date;
   startTime: Date;
   finishTime: Date;
-  imageEvent: string;
+  imgEvent: string;
+  imgSeat: string;
   desc: string;
   updateAt: Date;
   createdAt: Date;
+};
+
+export type TEventDetail = {
+  id: number;
+  categoryEvent: string;
+  price: number;
+  qty: number;
 };

@@ -1,9 +1,9 @@
 import userService from "../service/user.service";
 import UserService from "../service/user.service";
 import { type NextFunction, type Response, type Request } from "express";
-// import { sendVerification } from "../lib/nodemailer";
 import { TAccountData } from "../model/user.model";
-import { AccountData } from "@prisma/client";
+// import { AccountData } from "@prisma/client";
+import { handleVerification } from "../lib/nodemailer";
 
 declare module "express" {
   interface Request {
@@ -63,14 +63,15 @@ export class UserController {
     }
   }
 
-  // async sendVerification(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     sendVerification((req as any).accountData as TAccountData);
-  //     // const compiledTemplate = await userService.emailVerification(req);
-  //     res.redirect("http://localhost:3000/");
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
+  async sendVerification(req: Request, res: Response, next: NextFunction) {
+    try {
+      7;
+      handleVerification(req.accountData as TAccountData);
+      // const compiledTemplate = await userService.emailVerification(req);
+      res.redirect("http://localhost:3000/");
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 export default new UserController();

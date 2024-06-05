@@ -19,18 +19,17 @@ enum Type {
 }
 
 model AccountData {
-  id          Int         @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   fullName    String
-  email       String      @unique
+  email       String     @unique
   password    String
-  is_verified Boolean     @default(false)
+  is_verified Boolean    @default(false)
   type        Type
   noPhone     String
-  userData    UserDetail  @relation(fields: [id], references: [id])
-  updatedAt   DateTime    @updatedAt
-  createdAt   DateTime    @default(now())
-  PostEvent   PostEvent[]
-  Seat        Seat[]
+  userData    UserDetail @relation(fields: [id], references: [id])
+  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime   @default(now())
+  Event       Event[]
 
   @@index([email])
   @@map("accountdata")
@@ -69,53 +68,36 @@ enum City {
   Bekasi
 }
 
-model PostEvent {
-  id         Int         @id @default(autoincrement())
+model Event {
+  id         Int          @id @default(autoincrement())
   adminId    Int
-  admin      AccountData @relation(fields: [adminId], references: [id])
-  title      String      @unique
-  seatName   String?
-  Seat       Seat?       @relation(fields: [seatName], references: [nameSeat])
+  admin      AccountData  @relation(fields: [adminId], references: [id])
+  title      String       @unique
   status     Status
   category   Category
   location   String
   imgEvent   String?
+  imgSeat    String?
   date       DateTime
   startTime  DateTime
   finishTime DateTime
   city       City
   desc       String
-  updatedAt  DateTime    @updatedAt
-  createdAt  DateTime    @default(now())
-
-  @@map("postevent")
-}
-
-model Seat {
-  id         Int          @id @default(autoincrement())
-  adminId    Int
-  admin      AccountData  @relation(fields: [adminId], references: [id])
-  nameSeat   String       @unique
-  imgSeat    String?
-  SeatDetail SeatDetail[]
+  promo      Float?
   updatedAt  DateTime     @updatedAt
   createdAt  DateTime     @default(now())
-  PostEvent  PostEvent[]
+  EventPrice EventPrice[]
 
-  @@map("seat")
+  @@map("events")
 }
 
-model SeatDetail {
-  id         Int      @id @default(autoincrement())
-  seatType   String
-  maxSeat    Float
-  price      Float
-  promo      Float?
-  promoPrice Float?
-  updatedAt  DateTime @updatedAt
-  createdAt  DateTime @default(now())
-  Seat       Seat?    @relation(fields: [seatId], references: [id])
-  seatId     Int?
-
-  @@map("seatdetail")
+model EventPrice {
+  id            Int      @id @default(autoincrement())
+  categoryEvent String?  @unique
+  qty           Int
+  price         Float
+  updatedAt     DateTime @updatedAt
+  createdAt     DateTime @default(now())
+  Event         Event?   @relation(fields: [eventId], references: [id])
+  eventId       Int?
 }

@@ -20,20 +20,8 @@ class PostEvent {
       // eventValidator,
       verifyUser,
       uploader("POST", "post").single("imgEvent"),
-      eventController.postEvent
-    );
-    this.router.post(
-      "/seat",
-      verifyUser,
       uploaderSeat("POST", "post").single("imgSeat"),
-      // seatValidator,
-      eventController.postSeat
-    );
-
-    this.router.get(
-      "/seat/:adminId",
-      // verifyUser,
-      eventController.getSeatByAdminId
+      eventController.postEvent
     );
     // this.router.get("/:adminId", eventController.eventGetByID);
     // this.router.patch("/:id", eventController.updateGetById);

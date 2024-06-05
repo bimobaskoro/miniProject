@@ -17,6 +17,7 @@ class UserRouter {
     this.router.post("/v2", registerValidator, userController.register);
     this.router.get("/validate", verifyUser, userController.validateUser);
     this.router.get("/:id", userController.userGetById);
+    this.router.get("/verify/:token", userController.sendVerification);
   }
   getRouter() {
     return this.router;

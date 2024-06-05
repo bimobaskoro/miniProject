@@ -14,29 +14,6 @@ export class EventController {
     }
   }
 
-  async postSeat(req: Request, res: Response, next: NextFunction) {
-    try {
-      const data = await eventService.createSeat(req);
-      res.status(201).send({
-        message: "Seat has post",
-        data,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async getSeatByAdminId(req: Request, res: Response, next: NextFunction) {
-    try {
-      const data = await eventService.getSeatByAdminId(req);
-      res.status(201).send({
-        message: "Get Seat ",
-        data,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
   // async eventGetByID(req: Request, res: Response, next: NextFunction) {
   //   const adminId = parseInt(req.params.adminId);
   //   try {
