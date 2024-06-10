@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { axiosInstance } from "./app/_utils/config";
 import { jwtDecode } from "jwt-decode";
+import { AxiosError } from "axios";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -22,6 +23,7 @@ export async function middleware(request: NextRequest) {
       return true;
     })
     .catch((err) => {
+      if (err instanceof AxiosError) console.log(err.response?.data);
       return false;
     });
 
@@ -29,9 +31,7 @@ export async function middleware(request: NextRequest) {
 
   let userType = "";
   const access_token = response.cookies.get("access_token")?.value;
-  console.log("====================================");
-  console.log(access_token, "ini token");
-  console.log("====================================");
+
   if (access_token) {
     const decodedToken: any = jwtDecode(access_token);
 

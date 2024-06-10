@@ -5,7 +5,7 @@ import {
   eventValidator,
   seatValidator,
 } from "../middlewares/joi.validator.middleware";
-import { uploader, uploaderSeat } from "../lib/multer";
+import { blobUploader, uploader, uploaderSeat } from "../lib/multer";
 
 class PostEvent {
   private router: Router;
@@ -16,14 +16,23 @@ class PostEvent {
 
   intializedRoutes() {
     this.router.post(
-      "/event",
+      "/eventPost",
       // eventValidator,
       verifyUser,
-      uploader("POST", "post").single("imgEvent"),
-      uploaderSeat("POST", "post").single("imgSeat"),
+      blobUploader().fields([
+        { name: "imgEvent", maxCount: 1 },
+        { name: "imgSeat", maxCount: 1 },
+      ]),
+      // blobUploader().single("imgEvent"),
+      // blobUploader().single("imgSeat"),
+      // uploaderSeat("POST", "post").single("imgSeat"),
       eventController.postEvent
     );
-    // this.router.get("/:adminId", eventController.eventGetByID);
+    this.router.get("/image/:eventId", eventController.renderImageEvent);
+    this.router.get("/eventPrice", eventController.eventPriceGetByEventId);
+    this.router.get("/:adminId", eventController.eventGetByID);
+    this.router.get("/event/:id", eventController.eventGetById);
+    this.router.get("/", eventController.eventGetAll);
     // this.router.patch("/:id", eventController.updateGetById);
     // this.router.delete(
     //   "/event/:id",

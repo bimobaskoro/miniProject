@@ -8,10 +8,11 @@ export type TPostEvent = {
   category: string;
   location: string;
   city: string;
-  date: Date;
-  startTime: Date;
-  finishTime: Date;
+  date: string;
+  startTime: string;
+  finishTime: string;
   imgEvent: string;
+  promo: number;
   imgSeat: string;
   desc: string;
   updateAt: Date;

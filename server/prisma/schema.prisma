@@ -76,11 +76,11 @@ model Event {
   status     Status
   category   Category
   location   String
-  imgEvent   String?
-  imgSeat    String?
-  date       DateTime
-  startTime  DateTime
-  finishTime DateTime
+  imgEvent   Bytes?       @db.MediumBlob
+  imgSeat    Bytes?       @db.MediumBlob
+  date       String
+  startTime  String
+  finishTime String
   city       City
   desc       String
   promo      Float?

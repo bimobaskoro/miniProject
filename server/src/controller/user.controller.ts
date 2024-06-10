@@ -3,7 +3,7 @@ import UserService from "../service/user.service";
 import { type NextFunction, type Response, type Request } from "express";
 import { TAccountData } from "../model/user.model";
 // import { AccountData } from "@prisma/client";
-import { handleVerification } from "../lib/nodemailer";
+// import { handleVerification } from "../lib/nodemailer";
 
 declare module "express" {
   interface Request {
@@ -53,9 +53,13 @@ export class UserController {
 
   async validateUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const access_token = await userService.validateUser(req);
+      const { access_token, is_verified } = await userService.validateUser(req);
+      console.log("====================================");
+      console.log(access_token, "ini access token");
+      console.log("====================================");
       res.send({
         message: "success",
+        is_verified,
         access_token,
       });
     } catch (error) {
@@ -65,10 +69,12 @@ export class UserController {
 
   async sendVerification(req: Request, res: Response, next: NextFunction) {
     try {
-      7;
-      handleVerification(req.accountData as TAccountData);
-      // const compiledTemplate = await userService.emailVerification(req);
-      res.redirect("http://localhost:3000/");
+      UserService.registerVerify(req);
+
+      res
+        .status(200)
+        // .send("verify email success")
+        .redirect("http://localhost:3000/login");
     } catch (error) {
       next(error);
     }

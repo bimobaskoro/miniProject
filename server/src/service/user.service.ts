@@ -7,6 +7,8 @@ import { toLowerCase } from "../utils/toLowerCase";
 import { TAccountData } from "../model/user.model";
 import { createToken } from "../lib/jwt";
 import { handleVerification } from "../lib/nodemailer";
+import { verify } from "jsonwebtoken";
+import { SECRET_KEY } from "../config/config";
 
 class UserService {
   public model = prisma.accountData;
@@ -108,6 +110,7 @@ class UserService {
 
     return { accessToken, refreshToken };
   }
+
   async validateUser(req: Request) {
     console.log("masuk", req.accountData);
 
@@ -117,13 +120,15 @@ class UserService {
         email: true,
         fullName: true,
         type: true,
+        is_verified: true,
       },
       where: {
         id: req.accountData?.id,
       },
     });
 
-    return createToken(user, "1hr");
+    const access_token = createToken(user, "1hr");
+    return { access_token, is_verified: user?.is_verified };
   }
 
   async userGetById(req: Request) {
@@ -144,6 +149,22 @@ class UserService {
     });
     if (!data) throw new Error("user not found");
     return data as TAccountData;
+  }
+
+  async registerVerify(req: Request) {
+    const { token } = req.params;
+
+    const newUser = verify(token, SECRET_KEY) as TAccountData;
+
+    await prisma.accountData.update({
+      data: {
+        is_verified: true,
+      },
+      where: {
+        id: newUser?.id,
+      },
+    });
+    handleVerification(newUser as TAccountData);
   }
 }
 export default new UserService();

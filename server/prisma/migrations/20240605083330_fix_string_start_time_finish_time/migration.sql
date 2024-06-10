@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `events` MODIFY `date` VARCHAR(191) NOT NULL,
+    MODIFY `startTime` VARCHAR(191) NOT NULL,
+    MODIFY `finishTime` VARCHAR(191) NOT NULL;

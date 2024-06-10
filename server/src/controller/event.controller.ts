@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import eventService from "../service/event.service";
+import path from "path";
 
 export class EventController {
   async postEvent(req: Request, res: Response, next: NextFunction) {
@@ -14,19 +15,71 @@ export class EventController {
     }
   }
 
-  // async eventGetByID(req: Request, res: Response, next: NextFunction) {
-  //   const adminId = parseInt(req.params.adminId);
-  //   try {
-  //     const events = await eventService.getEventsByAdminId(adminId);
-  //     return res.send({
-  //       message: "fetch event by ID",
-  //       events,
-  //     });
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
+  async eventGetByID(req: Request, res: Response, next: NextFunction) {
+    const adminId = parseInt(req.params.adminId);
+    try {
+      const events = await eventService.getEventsByAdminId(adminId);
+      return res.send({
+        message: "fetch event by ID",
+        events,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 
+  async eventGetAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const events = await eventService.getEventAll();
+      return res.send({
+        message: "fetch event by ID",
+        events,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async renderImageEvent(req: Request, res: Response, next: NextFunction) {
+    try {
+      const blob = await eventService.getImgEvent(req);
+      res.set("Content-type", "image/png");
+      res.send(blob);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async eventPriceGetByEventId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const data = await eventService.getEventPriceByIdEvent();
+      console.log("====================================");
+      console.log(data);
+      console.log("====================================");
+      return res.send({
+        message: "fetch event pricfe by event id",
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async eventGetById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await eventService.getEventById(req);
+      return res.send({
+        message: "fetch event by id",
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
   // async updateGetById(req: Request, res: Response, next: NextFunction) {
   //   try {
   //     await eventService.updateEventById(req);

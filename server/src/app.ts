@@ -18,6 +18,10 @@ export class App {
     });
     this.app.use("/user", UserRouter.getRouter());
     this.app.use("/posts", eventRouter.getRouter());
+    this.app.use(
+      "/public/imagesEventpost",
+      express.static(`${__dirname}/public/imagesEventpost`)
+    );
   }
   private errorHandler() {
     this.app.use(

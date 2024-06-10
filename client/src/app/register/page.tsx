@@ -23,7 +23,7 @@ export default function Register() {
         Swal.fire({
           icon: "success",
           title: "Success Register",
-          text: "Your account has been successfully registered",
+          text: "Your account has been successfully registered, please check your email to verify!",
         });
 
         console.log("====================================");

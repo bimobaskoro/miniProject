@@ -1,4 +1,5 @@
-import EventComponent from "../_component/event.component";
+import CreateEventComponent from "../_component/_eventPage/createEvent.component";
+import ShowEventComponent from "../_component/_eventPage/showEvent.component";
 
 export default function event() {
   return (
@@ -172,7 +173,11 @@ export default function event() {
       </aside>
 
       <div className="p-4 sm:ml-64">
-        <EventComponent />
+        <CreateEventComponent />
+      </div>
+
+      <div className="p-4 sm:ml-64">
+        <ShowEventComponent />
       </div>
     </>
   );
