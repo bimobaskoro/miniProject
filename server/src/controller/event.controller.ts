@@ -80,6 +80,17 @@ export class EventController {
       next(error);
     }
   }
+
+  async updateEventById(req: Request, res: Response, next: NextFunction) {
+    try {
+      await eventService.updateEventById;
+      return res.send({
+        message: "post  has been updated",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
   // async updateGetById(req: Request, res: Response, next: NextFunction) {
   //   try {
   //     await eventService.updateEventById(req);
