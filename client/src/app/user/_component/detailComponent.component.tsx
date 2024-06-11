@@ -7,36 +7,56 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 
 import { axiosInstance } from "@/app/_lib/axios";
 import { TEvent } from "@/app/_models/event.model";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useFormik } from "formik";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/_lib/redux/store";
 
 export default function DetailComponent() {
+  const user = useSelector((state: RootState) => state.auth);
   const [event, setEventData] = useState<TEvent | null>(null);
   const [selectedEventPriceId, setSelectedEventPriceId] = useState<
     number | null
   >(null);
+
   const [quantity, setQuantity] = useState(1);
   const queryParams = useSearchParams();
+  const router = useRouter();
+  const eventId = queryParams.get("id");
+
+  const formik = useFormik({
+    initialValues: {
+      totalQty: 1,
+      totalPrice: 0,
+      buyerId: user.id,
+      eventId: eventId,
+      eventPriceId: event?.EventPrice[0].id,
+    },
+    onSubmit: async (values) => {
+      try {
+        const response = await axiosInstance().post("/transaction/", values);
+        console.log("Success", response.data);
+        router.push("/transaction");
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  });
 
   useEffect(() => {
-    const eventId = queryParams.get("id"); // Get event ID from the query parameters
+    const eventId = queryParams.get("id");
 
     const fetchEvent = async () => {
       try {
         const response = await axiosInstance().get(`/posts/event/${eventId}`);
-
-        console.log("====================================");
-        console.log("Get Event By ID :", response.data);
-        console.log("====================================");
-
         setEventData(response.data.data);
       } catch (error) {
-        console.log("====================================");
         console.log("Error :", error);
-        console.log("====================================");
       }
     };
     if (eventId) {
@@ -54,6 +74,7 @@ export default function DetailComponent() {
   const handleDecrement = () => {
     setQuantity((prevQuantity) => Math.max(1, prevQuantity - 1));
   };
+
   const handleIncrement = () => {
     if (quantity < 3) {
       if (event && selectedEventPriceId !== null) {
@@ -71,13 +92,29 @@ export default function DetailComponent() {
 
   const handleEventPriceSelect = (eventPriceId: number) => {
     setSelectedEventPriceId(eventPriceId);
-    setQuantity(1); // Reset quantity to 1 whenever a new EventPrice type is selected
+    setQuantity(1);
   };
+
+  const calculateTotalPrice = () => {
+    if (event && selectedEventPriceId !== null) {
+      const selectedEventPrice = event.EventPrice.find(
+        (ep) => ep.id === selectedEventPriceId
+      );
+      if (selectedEventPrice) {
+        return selectedEventPrice.price * quantity;
+      }
+    }
+    return 0;
+  };
+
+  useEffect(() => {
+    formik.setFieldValue("totalPrice", calculateTotalPrice());
+  }, [selectedEventPriceId, quantity]);
 
   return (
     <>
       <img
-        src={`http://localhost:8001/posts/image/${event?.id}`} // Menggunakan ID event untuk mengambil gambar
+        src={`http://localhost:8001/posts/image/${event?.id}`}
         className="w-full h-48 object-cover rounded-t-[8px]"
         alt=""
       />
@@ -109,7 +146,7 @@ export default function DetailComponent() {
           <DialogContent className="bg-white rounded-[10px]">
             <DialogHeader>
               <DialogTitle>Ticket</DialogTitle>
-              <form>
+              <form onSubmit={formik.handleSubmit}>
                 {event?.EventPrice.map((e) => (
                   <div key={e.id} className="text-left  mb-2">
                     <input
@@ -144,9 +181,9 @@ export default function DetailComponent() {
                       >
                         <path
                           stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
                           d="M1 1h16"
                         />
                       </svg>
@@ -171,16 +208,27 @@ export default function DetailComponent() {
                       >
                         <path
                           stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
                           d="M9 1v16M1 9h16"
                         />
                       </svg>
                     </button>
                   </div>
                 )}
-                <button className="rounded-[8px] bg-[#007BFF] p-2 font-bold text-white">
+                {formik.values.totalPrice > 0 && (
+                  <div className="flex items-center mt-2">
+                    <span className="text-gray-600 mr-2">Total Price:</span>
+                    <span className="text-gray-800 font-bold">
+                      Rp.{formik.values.totalPrice}
+                    </span>
+                  </div>
+                )}
+                <button
+                  type="submit"
+                  className="rounded-[8px] bg-[#007BFF] p-2 font-bold text-white"
+                >
                   Buy Ticket
                 </button>
               </form>

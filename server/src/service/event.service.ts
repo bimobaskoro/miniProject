@@ -207,7 +207,6 @@ class EventService {
               eventId: updatedEvent.id,
             }));
 
-          // Delete old prices and create new ones
           await prisma.eventPrice.deleteMany({
             where: { eventId: updatedEvent.id },
           });
