@@ -84,9 +84,10 @@ export class EventController {
 
   async updateEventById(req: Request, res: Response, next: NextFunction) {
     try {
-      eventService.updateEventById;
+      const data = eventService.updateEventById(req);
       return res.send({
         message: "Event has been updated",
+        data,
       });
     } catch (error) {
       next(error);
@@ -95,9 +96,10 @@ export class EventController {
 
   async deleteEventById(req: Request, res: Response, next: NextFunction) {
     try {
-      eventService.deleteEventById;
+      const data = await eventService.deleteEventById(req);
       return res.send({
         message: "Event has been deleted",
+        data,
       });
     } catch (error) {
       next(error);
