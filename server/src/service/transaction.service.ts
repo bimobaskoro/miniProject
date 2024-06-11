@@ -4,7 +4,9 @@ import { prisma } from "../lib/prisma";
 
 class TransactionService {
   async createTransaction(req: Request) {
-    const { totalQty, totalPrice, buyerId, eventId, eventPriceId } = req.body;
+    const { totalQty, totalPrice, eventId, eventPriceId } = req.body;
+
+    console.log(req.body);
 
     try {
       const transaction = await prisma.transaction.create({
@@ -12,7 +14,7 @@ class TransactionService {
           totalQty: Number(totalQty),
           totalPrice: Number(totalPrice),
           status: "Pending",
-          buyer: { connect: { id: Number(buyerId) } },
+          buyer: { connect: { id: Number(req.accountData?.id) } },
           event: { connect: { id: Number(eventId) } },
           eventPrice: { connect: { id: Number(eventPriceId) } },
         },

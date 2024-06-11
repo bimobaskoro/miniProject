@@ -1,5 +1,6 @@
 import { Router } from "express";
 import transactionController from "../controller/transaction.controller";
+import { verifyUser } from "../middlewares/auth.middleware";
 
 class TransactionRouter {
   private router: Router;
@@ -10,7 +11,7 @@ class TransactionRouter {
   }
 
   intializedRoutes() {
-    this.router.post("/", transactionController.createTransaction);
+    this.router.post("/", verifyUser, transactionController.createTransaction);
   }
 
   getRouter() {

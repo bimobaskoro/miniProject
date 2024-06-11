@@ -53,7 +53,7 @@ class EventService {
 
           if (imgSeat) {
             const buffer2 = await sharp(imgSeat?.buffer).png().toBuffer();
-            eventData.imgEvent = buffer2;
+            eventData.imgSeat = buffer2;
           }
         }
         const newEvent = await prisma.event.create({
@@ -144,7 +144,7 @@ class EventService {
   }
   async updateEventById(req: Request) {
     const adminId = req.accountData?.id;
-    const { id } = req.params; // Event ID from request parameters
+    const { eventId } = req.params; // Event ID from request parameters
 
     const {
       title,
@@ -166,7 +166,7 @@ class EventService {
         const fileEvent = req.file;
 
         const existingEvent = await prisma.event.findUnique({
-          where: { id: Number(id) },
+          where: { id: Number(eventId) },
         });
 
         if (!existingEvent) {
@@ -194,7 +194,7 @@ class EventService {
         };
 
         const updatedEvent = await prisma.event.update({
-          where: { id: Number(id) },
+          where: { id: Number(eventId) },
           data: eventData,
         });
 
@@ -224,11 +224,12 @@ class EventService {
   }
 
   async deleteEventById(req: Request) {
-    const { id } = req.params;
-    console.log(id);
+    const eventId = parseInt(req.params.eventId);
+
+    console.log(eventId);
 
     return await prisma.event.delete({
-      where: { id: parseInt(id) },
+      where: { id: eventId },
     });
   }
 

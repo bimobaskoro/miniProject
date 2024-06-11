@@ -35,7 +35,7 @@ export default function DetailComponent() {
       totalPrice: 0,
       buyerId: user.id,
       eventId: eventId,
-      eventPriceId: event?.EventPrice[0].id,
+      eventPriceId: 0,
     },
     onSubmit: async (values) => {
       try {
@@ -49,12 +49,22 @@ export default function DetailComponent() {
   });
 
   useEffect(() => {
+    console.log(formik.values);
+  }, [formik.values]);
+
+  useEffect(() => {
     const eventId = queryParams.get("id");
 
     const fetchEvent = async () => {
       try {
         const response = await axiosInstance().get(`/posts/event/${eventId}`);
         setEventData(response.data.data);
+        console.log(response.data.data);
+
+        formik.setFieldValue(
+          "eventPriceId",
+          response.data.data.EventPrice[0].id
+        );
       } catch (error) {
         console.log("Error :", error);
       }

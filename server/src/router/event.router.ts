@@ -33,8 +33,12 @@ class PostEvent {
     this.router.get("/:adminId", eventController.eventGetByID);
     this.router.get("/event/:id", eventController.eventGetById);
     this.router.get("/", eventController.eventGetAll);
-    this.router.delete("/event/:eventId", eventController.deleteEventById);
-    this.router.patch("/event/:eventId", eventController.updateEventById);
+    this.router.delete("/:eventId", eventController.deleteEventById);
+    this.router.patch(
+      "/event/:eventId",
+      verifyUser,
+      eventController.updateEventById
+    );
     // this.router.patch("/:id", eventController.updateGetById);
     // this.router.delete(
     //   "/event/:id",
