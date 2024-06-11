@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import eventService from "../service/event.service";
 import path from "path";
+import userService from "../service/user.service";
 
 export class EventController {
   async postEvent(req: Request, res: Response, next: NextFunction) {
@@ -75,6 +76,28 @@ export class EventController {
       return res.send({
         message: "fetch event by id",
         data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateEventById(req: Request, res: Response, next: NextFunction) {
+    try {
+      eventService.updateEventById;
+      return res.send({
+        message: "Event has been updated",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteEventById(req: Request, res: Response, next: NextFunction) {
+    try {
+      eventService.deleteEventById;
+      return res.send({
+        message: "Event has been deleted",
       });
     } catch (error) {
       next(error);
