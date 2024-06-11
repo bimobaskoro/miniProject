@@ -224,9 +224,11 @@ class EventService {
   }
 
   async deleteEventById(req: Request) {
-    const { eventId } = req.params;
+    const { id } = req.params;
+    console.log(id);
+
     return await prisma.event.delete({
-      where: { id: parseInt(eventId) },
+      where: { id: parseInt(id) },
     });
   }
 
