@@ -3,6 +3,7 @@ import { PORT, corsOptions } from "./config/config";
 import UserRouter from "./router/user.router";
 import eventRouter from "./router/event.router";
 import cors from "cors";
+import transactionRouter from "./router/transaction.router";
 export class App {
   private app: Application;
   constructor() {
@@ -18,6 +19,8 @@ export class App {
     });
     this.app.use("/user", UserRouter.getRouter());
     this.app.use("/posts", eventRouter.getRouter());
+    this.app.use("/transaction", transactionRouter.getRouter());
+
     this.app.use(
       "/public/imagesEventpost",
       express.static(`${__dirname}/public/imagesEventpost`)

@@ -29,37 +29,59 @@ CREATE TABLE `userdetail` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `postevent` (
+CREATE TABLE `events` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `adminId` INTEGER NOT NULL,
-    `eventDetailId` INTEGER NULL,
     `title` VARCHAR(191) NOT NULL,
     `status` ENUM('Publish', 'Hidden') NOT NULL,
     `category` ENUM('Concert', 'Expo', 'Play', 'Workshop', 'Sport') NOT NULL,
     `location` VARCHAR(191) NOT NULL,
-    `imgEvent` VARCHAR(191) NULL,
-    `imgSeat` VARCHAR(191) NULL,
-    `date` DATETIME(3) NOT NULL,
-    `startTime` DATETIME(3) NOT NULL,
-    `finishTime` DATETIME(3) NOT NULL,
+    `imgEvent` MEDIUMBLOB NULL,
+    `imgSeat` MEDIUMBLOB NULL,
+    `date` VARCHAR(191) NOT NULL,
+    `startTime` VARCHAR(191) NOT NULL,
+    `finishTime` VARCHAR(191) NOT NULL,
     `city` ENUM('Jakarta', 'Bogor', 'Depok', 'Tangerang', 'Bekasi') NOT NULL,
     `desc` VARCHAR(191) NOT NULL,
     `promo` DOUBLE NULL,
     `updatedAt` DATETIME(3) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    UNIQUE INDEX `postevent_title_key`(`title`),
+    UNIQUE INDEX `events_title_key`(`title`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `EventDetail` (
+CREATE TABLE `eventprice` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `categoryEvent` VARCHAR(191) NULL,
     `qty` INTEGER NOT NULL,
     `price` DOUBLE NOT NULL,
     `updatedAt` DATETIME(3) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `eventId` INTEGER NULL,
+
+    UNIQUE INDEX `eventprice_categoryEvent_key`(`categoryEvent`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `transaction` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `buyerId` INTEGER NOT NULL,
+    `eventId` INTEGER NOT NULL,
+    `eventPriceId` INTEGER NOT NULL,
+    `status` ENUM('Pending', 'Paid') NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `totalQty` INTEGER NOT NULL,
+    `totalPrice` DOUBLE NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Teransaction` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -68,7 +90,16 @@ CREATE TABLE `EventDetail` (
 ALTER TABLE `accountdata` ADD CONSTRAINT `accountdata_id_fkey` FOREIGN KEY (`id`) REFERENCES `userdetail`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `postevent` ADD CONSTRAINT `postevent_adminId_fkey` FOREIGN KEY (`adminId`) REFERENCES `accountdata`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `events` ADD CONSTRAINT `events_adminId_fkey` FOREIGN KEY (`adminId`) REFERENCES `accountdata`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `postevent` ADD CONSTRAINT `postevent_eventDetailId_fkey` FOREIGN KEY (`eventDetailId`) REFERENCES `EventDetail`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `eventprice` ADD CONSTRAINT `eventprice_eventId_fkey` FOREIGN KEY (`eventId`) REFERENCES `events`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `transaction` ADD CONSTRAINT `transaction_buyerId_fkey` FOREIGN KEY (`buyerId`) REFERENCES `accountdata`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `transaction` ADD CONSTRAINT `transaction_eventId_fkey` FOREIGN KEY (`eventId`) REFERENCES `events`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `transaction` ADD CONSTRAINT `transaction_eventPriceId_fkey` FOREIGN KEY (`eventPriceId`) REFERENCES `eventprice`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

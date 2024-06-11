@@ -2,30 +2,11 @@
 
 export type TTransaction = {
   id: number;
+  buyerId: number;
   eventId: number;
-  userId: number;
-  seatSelection: string;
-  totalSeat: number;
+  eventPriceId: number;
+  status: string;
+  totalQty: number;
   totalPrice: number;
-  updateAt?: Date;
-  createdAt?: Date;
-};
-
-export type TTicket = {
-  transactionId: number;
-};
-
-export type TPromo = {
-  promoId: number;
-};
-
-export type TPostPromo = {
-  id: number;
-  adminId: number;
-  title: string;
-  value: number;
-  desc: string;
-  price: number;
-  updateAt?: Date;
-  createdAt?: Date;
+  createdAt: Date;
 };
