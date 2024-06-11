@@ -148,15 +148,17 @@ class EventService {
 
     const {
       title,
-      desc,
       status,
       category,
-      promo,
       location,
-      city,
+      imgEvent,
+      imgSeat,
       date,
       startTime,
       finishTime,
+      city,
+      desc,
+      promo,
     } = req.body;
 
     return await prisma.$transaction(async (prisma) => {
@@ -181,6 +183,7 @@ class EventService {
           desc,
           status,
           imgEvent: buffer ? buffer : existingEvent.imgEvent, // Update image only if a new one is provided
+          imgSeat: buffer ? buffer : existingEvent.imgSeat,
           promo: Number(promo),
           date,
           location,
@@ -195,9 +198,9 @@ class EventService {
           data: eventData,
         });
 
-        if (req.body.eventDetail && req.body.eventDetail.length > 0) {
+        if (req.body.eventPrice && req.body.eventPrice.length > 0) {
           const priceEventList: Prisma.EventPriceCreateManyInput[] =
-            req.body.eventDetail.map((detail: any) => ({
+            req.body.eventPrice.map((detail: any) => ({
               categoryEvent: detail.categoryEvent,
               qty: Number(detail.qty),
               price: Number(detail.price),
@@ -221,12 +224,12 @@ class EventService {
     });
   }
 
-  // async deleteEvent(req: Request) {
-  //   const { id } = req.params;
-  //   return await prisma.postEvent.delete({
-  //     where: { id: parseInt(id) },
-  //   });
-  // }
+  async deleteEventById(req: Request) {
+    const { eventId } = req.params;
+    return await prisma.event.delete({
+      where: { id: parseInt(eventId) },
+    });
+  }
 
   //   async deleteSeats(req: Request) {
   //     const { id } = req.params;
