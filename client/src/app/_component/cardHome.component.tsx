@@ -38,7 +38,7 @@ export default function CardHomeComponent() {
 
   return (
     <>
-      <div className="p-2">
+      <div className="p-2 grid-event">
         {eventData.map((event) => {
           const lowestPrice = event.EventPrice
             ? Math.min(...event.EventPrice.map((ep) => ep.price))
@@ -46,28 +46,32 @@ export default function CardHomeComponent() {
 
           return (
             <Link href={`/user?id=${event.id}`} key={event.id}>
-              <div
-                className="card bg-white rounded-[8px] shadow-md"
-                key={event.id}
-              >
-                <center>
-                  <img
-                    src={`http://localhost:8001/posts/image/${event.id}`} // Menggunakan ID event untuk mengambil gambar
-                    className="w-full h-48 object-cover rounded-[8px]"
-                    alt=""
-                  />
-                </center>
-                <div className="card-body">
-                  <div className="font-bold pt-4 pl-3 text-[20px]">
-                    {event.title}
+              <div className="">
+                <div className="grid-event-item">
+                  <div
+                    className="card  bg-white rounded-[8px] shadow-md"
+                    key={event.id}
+                  >
+                    <center>
+                      <img
+                        src={`http://localhost:8001/posts/image/${event.id}`} // Menggunakan ID event untuk mengambil gambar
+                        className="w-full h-48 object-cover rounded-[8px]"
+                        alt=""
+                      />
+                    </center>
+                    <div className="card-body">
+                      <div className="font-bold pt-4 pl-3 text-[20px]">
+                        {event.title}
+                      </div>
+                      <div className="flex text-gray-700 text-[15px]">
+                        <div className="pl-3">{event.date}</div>
+                        <div className="pl-3">{event.city}</div>
+                      </div>
+                      {lowestPrice !== null && (
+                        <div className="text-right pr-3">Rp.{lowestPrice}</div>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex text-gray-700 text-[15px]">
-                    <div className="pl-3">{event.date}</div>
-                    <div className="pl-3">{event.city}</div>
-                  </div>
-                  {lowestPrice !== null && (
-                    <div className="text-right pr-3">Rp.{lowestPrice}</div>
-                  )}
                 </div>
               </div>
             </Link>

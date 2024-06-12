@@ -4,7 +4,7 @@ import { IoTicketOutline } from "react-icons/io5";
 import { FaSearch } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
 import dynamic from "next/dynamic";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useAppSelector } from "../../../hooks";
 import { deleteCookie } from "cookies-next";
 import { useDispatch } from "react-redux";
@@ -13,6 +13,13 @@ import { Button } from "@/components/ui/button";
 import { CreditCard, LogOut, User, TicketPercent } from "lucide-react";
 import { DropdownMenuGroup } from "@radix-ui/react-dropdown-menu";
 import { Dropdown } from "react-day-picker";
+import { axiosInstance } from "../_lib/axios";
+import { useFormik } from "formik";
+import _ from "lodash";
+interface SearchResult {
+  title: string;
+  // tambahkan properti lainnya sesuai dengan respons API Anda
+}
 
 const DropdownMenu = dynamic(
   () => import("@/components/ui/dropdown-menu").then((mod) => mod.DropdownMenu),
@@ -54,7 +61,45 @@ const DropdownMenuTrigger = dynamic(
 
 export default function NavbarComponent() {
   const user = useAppSelector((state) => state.auth);
+  const [searchResults, setSearchResults] = useState<Array<SearchResult>>([]);
   const dispatch = useDispatch();
+
+  const handleSearch = async (query: string) => {
+    try {
+      const response = await axiosInstance().get(`/search/`, {
+        params: { title: query },
+      });
+
+      setSearchResults(response.data.data);
+      console.log("Search results:", response.data);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  };
+
+  const debouncedSearch = useCallback(
+    _.debounce((query: string) => handleSearch(query), 100),
+    []
+  );
+
+  const formik = useFormik({
+    initialValues: {
+      search: "",
+    },
+    onSubmit: (values) => {
+      handleSearch(values.search);
+    },
+  });
+
+  console.log("====================================");
+  console.log(formik);
+  console.log("====================================");
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    formik.handleChange(e);
+    debouncedSearch(e.target.value);
+  };
+
   return (
     <>
       <nav className="bg-white border-gray-200 flex p-2">
@@ -63,7 +108,10 @@ export default function NavbarComponent() {
           <input
             type="text"
             id="search"
+            name="query"
             className="ml-5"
+            value={formik.values.search}
+            onChange={handleInputChange}
             placeholder="Search Event"
           ></input>
         </div>
@@ -117,6 +165,14 @@ export default function NavbarComponent() {
           </DropdownMenuContent>
         </DropdownMenu>
       </nav>
+
+      <div className="mt-4">
+        {searchResults.map((result, index) => (
+          <div key={index} className="border border-gray-200 p-2 m-2">
+            <div>{result.title}</div>x{" "}
+          </div>
+        ))}
+      </div>
     </>
   );
 }

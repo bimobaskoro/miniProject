@@ -64,62 +64,47 @@ class TransactionService {
     console.log("====================================");
     console.log(req.params, req.body);
     console.log("====================================");
-
     return await prisma.$transaction(async (prisma) => {
       try {
         const transaction = await prisma.transaction.findUnique({
           where: { id: Number(eventId) },
           include: { buyer: true, buyerDetail: true },
         });
-
-        console.log("Transcation :", transaction);
-
         if (!transaction) {
           return new Response("Transaction not found", { status: 404 });
         }
 
-        const newPoints = transaction.buyerDetail.point - point;
-
-        console.log("====================================");
-        console.log("New Points", newPoints);
-        console.log("====================================");
-
-        if (newPoints < 0) {
-          return new Response("Insufficient points", { status: 400 });
-        }
-
         const dataTransaction: Prisma.TransactionUpdateInput = {
-          totalPrice: totalPrice,
+          totalPrice: Number(totalPrice),
           status: "Paid",
         };
 
         const updatedUser = await prisma.userDetail.update({
           where: { id: transaction.buyerId },
           data: {
-            point: newPoints,
+            point: Number(point),
           },
         });
-        console.log("====================================");
-        console.log("Update User", updatedUser);
-        console.log("====================================");
 
         const updatedTransaction = await prisma.transaction.update({
           where: { id: Number(eventId) },
           data: dataTransaction,
         });
 
-        console.log("====================================");
-        console.log("Update transaction", updatedTransaction);
-        console.log("====================================");
+        const updatedEventPrice = await prisma.eventPrice.update({
+          where: { id: transaction.eventPriceId },
+          data: {
+            qty: {
+              decrement: transaction.totalQty,
+            },
+          },
+        });
 
         const result = {
           updatedUser,
           updatedTransaction,
+          updatedEventPrice,
         };
-
-        console.log("====================================");
-        console.log("Result:", result);
-        console.log("====================================");
 
         return result;
       } catch (error) {

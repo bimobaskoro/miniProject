@@ -4,6 +4,7 @@ import UserRouter from "./router/user.router";
 import eventRouter from "./router/event.router";
 import cors from "cors";
 import transactionRouter from "./router/transaction.router";
+import searchRouter from "./router/search.router";
 export class App {
   private app: Application;
   constructor() {
@@ -19,6 +20,7 @@ export class App {
     });
     this.app.use("/user", UserRouter.getRouter());
     this.app.use("/posts", eventRouter.getRouter());
+    this.app.use("/search", searchRouter.getRouter());
     this.app.use("/transaction", transactionRouter.getRouter());
 
     this.app.use(
