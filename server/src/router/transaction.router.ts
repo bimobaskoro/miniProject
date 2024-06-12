@@ -12,6 +12,11 @@ class TransactionRouter {
 
   intializedRoutes() {
     this.router.post("/", verifyUser, transactionController.createTransaction);
+    this.router.get("/:id", transactionController.getTransactionById);
+    this.router.patch(
+      "/update/:eventId",
+      transactionController.updateTransactionById
+    );
   }
 
   getRouter() {

@@ -19,6 +19,9 @@ export async function middleware(request: NextRequest) {
     })
 
     .then((res) => {
+      console.log("====================================");
+      console.log(res.data, "masuk");
+      console.log("====================================");
       response.cookies.set("access_token", res.data.access_token);
       return true;
     })

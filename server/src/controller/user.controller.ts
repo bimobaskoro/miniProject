@@ -1,13 +1,14 @@
 import userService from "../service/user.service";
 import UserService from "../service/user.service";
 import { type NextFunction, type Response, type Request } from "express";
-import { TAccountData } from "../model/user.model";
+import { TAccountData, TUserDetail } from "../model/user.model";
 // import { AccountData } from "@prisma/client";
 // import { handleVerification } from "../lib/nodemailer";
 
 declare module "express" {
   interface Request {
     accountData?: TAccountData;
+    userDetail?: TUserDetail;
   }
 }
 

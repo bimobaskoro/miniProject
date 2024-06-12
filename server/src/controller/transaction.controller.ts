@@ -13,6 +13,30 @@ export class TransactionController {
       next(error);
     }
   }
+
+  async getTransactionById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await transactionService.getTransactionById(req);
+      res.send({
+        message: "Fetch Transaction By Id",
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateTransactionById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await transactionService.updateTransaction(req);
+      res.send({
+        message: "Update success",
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new TransactionController();

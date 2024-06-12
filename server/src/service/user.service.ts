@@ -93,6 +93,9 @@ class UserService {
     const { email, password } = req.body;
 
     const data = (await prisma.accountData.findFirst({
+      include: {
+        userData: true,
+      },
       where: {
         email: email,
       },
@@ -121,6 +124,7 @@ class UserService {
         fullName: true,
         type: true,
         is_verified: true,
+        userData: true,
       },
       where: {
         id: req.accountData?.id,

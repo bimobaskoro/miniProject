@@ -3,6 +3,7 @@
 export type TTransaction = {
   id: number;
   buyerId: number;
+  buyerDetailId: number;
   eventId: number;
   eventPriceId: number;
   status: string;

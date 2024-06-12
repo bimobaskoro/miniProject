@@ -2,7 +2,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -23,25 +22,33 @@ export default function DetailComponent() {
   const [selectedEventPriceId, setSelectedEventPriceId] = useState<
     number | null
   >(null);
-
   const [quantity, setQuantity] = useState(1);
   const queryParams = useSearchParams();
   const router = useRouter();
   const eventId = queryParams.get("id");
-
+  console.log("====================================");
+  console.log("User :", user);
+  console.log("====================================");
   const formik = useFormik({
     initialValues: {
       totalQty: 1,
       totalPrice: 0,
       buyerId: user.id,
+      buyerDetailId: user.userData?.id,
       eventId: eventId,
       eventPriceId: 0,
     },
     onSubmit: async (values) => {
       try {
         const response = await axiosInstance().post("/transaction/", values);
+        console.log("response", response);
+
         console.log("Success", response.data);
-        router.push("/transaction");
+        const id = response.data.data.id;
+        console.log("====================================");
+        console.log("id transaction : ", id);
+        console.log("====================================");
+        router.push(`/transaction?id=${id}`);
       } catch (error) {
         console.log(error);
       }
@@ -119,6 +126,7 @@ export default function DetailComponent() {
 
   useEffect(() => {
     formik.setFieldValue("totalPrice", calculateTotalPrice());
+    formik.setFieldValue("totalQty", quantity); // Update totalQty whenever quantity changes
   }, [selectedEventPriceId, quantity]);
 
   return (
@@ -148,10 +156,8 @@ export default function DetailComponent() {
       <div className="flex justify-between pl-2 pr-2">
         <div className="text-[22px] font-bold">Rp.{lowestPrice}</div>
         <Dialog>
-          <DialogTrigger>
-            <button className="rounded-[8px] bg-[#007BFF] p-2 font-bold text-white">
-              Buy Ticket
-            </button>
+          <DialogTrigger className="rounded-[8px] bg-[#007BFF] p-2 font-bold text-white">
+            Buy Ticket
           </DialogTrigger>
           <DialogContent className="bg-white rounded-[10px]">
             <DialogHeader>

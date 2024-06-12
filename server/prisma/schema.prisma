@@ -37,13 +37,14 @@ model AccountData {
 }
 
 model UserDetail {
-  id              Int          @id @default(autoincrement())
+  id              Int           @id @default(autoincrement())
   promoId         Int?
-  point           Int          @default(0)
+  point           Int           @default(0)
   referalCode     String?
-  yourReferalCode String?      @unique
+  yourReferalCode String?       @unique
   expReferalCode  DateTime?
   AccountData     AccountData?
+  Transaction     Transaction[]
 
   @@map("userdetail")
 }
@@ -113,17 +114,19 @@ enum StatusTransaction {
 }
 
 model Transaction {
-  id           Int               @id @default(autoincrement())
-  buyerId      Int
-  buyer        AccountData       @relation(fields: [buyerId], references: [id])
-  eventId      Int
-  event        Event             @relation(fields: [eventId], references: [id])
-  eventPriceId Int
-  eventPrice   EventPrice        @relation(fields: [eventPriceId], references: [id])
-  status       StatusTransaction
-  createdAt    DateTime          @default(now())
-  totalQty     Int
-  totalPrice   Float
+  id            Int               @id @default(autoincrement())
+  buyerId       Int
+  buyer         AccountData       @relation(fields: [buyerId], references: [id])
+  buyerDetailId Int
+  buyerDetail   UserDetail        @relation(fields: [buyerDetailId], references: [id])
+  eventId       Int
+  event         Event             @relation(fields: [eventId], references: [id])
+  eventPriceId  Int
+  eventPrice    EventPrice        @relation(fields: [eventPriceId], references: [id])
+  status        StatusTransaction
+  createdAt     DateTime          @default(now())
+  totalQty      Int
+  totalPrice    Float
 
   @@map("transaction")
 }
