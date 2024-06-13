@@ -38,7 +38,7 @@ export default function EventComponent({}: Props) {
       </div>
       <div className="p-4 sm:ml-64">
         <ShowEventComponent events={events} fetch={fetchEvents} />
-      </div>{" "}
+      </div>
     </>
   );
 }

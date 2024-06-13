@@ -133,7 +133,7 @@ export default function DetailComponent() {
     <>
       <img
         src={`http://localhost:8001/posts/image/${event?.id}`}
-        className="w-full h-48 object-cover rounded-t-[8px]"
+        className="w-full object-contain aspect-square md:h-[500px] rounded-t-[8px]"
         alt=""
       />
       <div className="information">
@@ -159,17 +159,17 @@ export default function DetailComponent() {
           <DialogTrigger className="rounded-[8px] bg-[#007BFF] p-2 font-bold text-white">
             Buy Ticket
           </DialogTrigger>
-          <DialogContent className="bg-white rounded-[10px]">
+          <DialogContent className="bg-white rounded-[10px] overflow-y-auto h-[500px]">
             <DialogHeader>
               <DialogTitle>Ticket</DialogTitle>
               <form onSubmit={formik.handleSubmit}>
                 <img
                   src={`http://localhost:8001/posts/imageSeat/${event?.id}`}
-                  className="w-full h-48 object-cover rounded-t-[8px]"
+                  className="w-full bject-contain aspect-square md:h-[500px] rounded-[8px]]"
                   alt=""
                 />
                 {event?.EventPrice.map((e) => (
-                  <div key={e.id} className="text-left  mb-2">
+                  <div key={e.id} className="text-left  mb-2 mt-2">
                     <input
                       type="radio"
                       id={`eventPrice-${e.id}`}
