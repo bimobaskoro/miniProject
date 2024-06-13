@@ -24,16 +24,15 @@ export const eventSchema = Joi.object({
   city: Joi.string()
     .required()
     .valid("Jakarta", "Bogor", "Depok", "Tangerang", "Bekasi"),
-  date: Joi.date().required(),
-  startTime: Joi.date().timestamp(),
-  finishTime: Joi.date().timestamp(),
+  date: Joi.string().required(),
+  startTime: Joi.string().required(),
+  finishTime: Joi.string().required(),
   desc: Joi.string().required(),
+  promo: Joi.number(),
 });
 
-export const seatSchema = Joi.object({
-  seatType: Joi.string().required(),
-  maxSeat: Joi.number().required(),
-  price: Joi.number().required(),
-  promo: Joi.number(),
-  promoPrice: Joi.number(),
+export const eventPriceSchema = Joi.object({
+  categoryEvent: Joi.string(),
+  qty: Joi.number(),
+  price: Joi.number(),
 });

@@ -11,7 +11,7 @@ export type TEvent = {
   date: string;
   startTime: string;
   finishTime: string;
-  imgEvent: string;
+  imgEvent: Blob;
   imgSeat: string;
   promo: number;
   desc: string;

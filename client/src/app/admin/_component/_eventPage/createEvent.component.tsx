@@ -5,7 +5,6 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -26,21 +25,20 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import Swal from "sweetalert2";
+import { AxiosError } from "axios";
+import { TUser } from "@/app/_models/user.mode";
 interface ISeat {
   nameSeat: string;
 }
 
-export default function CreateEventComponent() {
+export default function CreateEventComponent({ fetch }: { fetch: () => void }) {
   interface EventDetail {
     categoryEvent: string;
     qty: number;
     price: number;
   }
 
-  const [seat, setSeat] = useState<ISeat[]>([]);
   const [date, setDate] = React.useState<Date>();
-  const user = useAppSelector((state) => state.auth);
-  const route = useRouter();
 
   const [eventDetails, setEventDetails] = useState<EventDetail[]>([
     { categoryEvent: "", qty: 0, price: 0 },
@@ -75,19 +73,25 @@ export default function CreateEventComponent() {
             },
           }
         );
-        console.log("====================================");
-        console.log("Success", response.data);
-        console.log("====================================");
+
         Swal.fire({
           icon: "success",
           text: "Event Upload",
+          customClass: {
+            container: "my-swal",
+          },
         });
+        fetch();
       } catch (error) {
         console.error("Error:", error);
-        Swal.fire({
-          icon: "error",
-          text: `Error : ${error}`,
-        });
+        if (error instanceof AxiosError)
+          Swal.fire({
+            icon: "error",
+            text: `Error : ${error.response?.data.message}`,
+            customClass: {
+              container: "my-swal",
+            },
+          });
       }
     },
   });

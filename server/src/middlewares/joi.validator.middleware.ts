@@ -3,7 +3,7 @@ import {
   registerSchema,
   loginSchema,
   eventSchema,
-  seatSchema,
+  eventPriceSchema,
 } from "../lib/joi";
 import { TAccountData } from "../model/user.model";
 
@@ -52,13 +52,13 @@ export async function eventValidator(
   }
 }
 
-export async function seatValidator(
+export async function eventPriceValidator(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    req.accountData = await seatSchema.validateAsync(req.body);
+    req.accountData = await eventPriceSchema.validateAsync(req.body);
     next();
   } catch (error) {
     next(error);

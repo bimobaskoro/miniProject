@@ -60,13 +60,20 @@ class EventService {
           data: eventData,
         });
 
-        const priceEventList: Prisma.EventPriceCreateManyInput =
+        const priceEventList: Prisma.EventPriceCreateManyInput[] =
           req.body.eventDetail.map((detail: any) => ({
             categoryEvent: detail.categoryEvent,
             qty: Number(detail.qty),
             price: Number(detail.price),
             eventId: newEvent.id,
           }));
+
+        for (let i = 0; i < priceEventList.length; i++) {
+          const check = priceEventList.filter(
+            (v) => v.categoryEvent == priceEventList[i].categoryEvent
+          );
+          if (check.length > 1) throw new Error("multiple category event");
+        }
 
         const eventss = await prisma.eventPrice.createMany({
           data: priceEventList,
@@ -163,7 +170,7 @@ class EventService {
 
     return await prisma.$transaction(async (prisma) => {
       try {
-        const fileEvent = req.file;
+        console.log(req.body, "test");
 
         const existingEvent = await prisma.event.findUnique({
           where: { id: Number(id) },
@@ -173,17 +180,10 @@ class EventService {
           throw new Error("Event not found");
         }
 
-        const buffer = fileEvent
-          ? await sharp(fileEvent.buffer).png().toBuffer()
-          : undefined;
-
         const eventData: Prisma.EventUpdateInput = {
           title,
-          admin: { connect: { id: Number(adminId) } },
           desc,
           status,
-          imgEvent: buffer ? buffer : existingEvent.imgEvent, // Update image only if a new one is provided
-          imgSeat: buffer ? buffer : existingEvent.imgSeat,
           promo: Number(promo),
           date,
           location,
@@ -192,6 +192,27 @@ class EventService {
           finishTime,
           category,
         };
+
+        if (req.files) {
+          const fileEvent = req.files as {
+            [fieldname: string]: Express.Multer.File[];
+          };
+
+          const imgEvent = fileEvent["imgEvent"] && fileEvent["imgEvent"][0];
+          const imgSeat = fileEvent["imgSeat"] && fileEvent["imgSeat"][0];
+
+          console.log(imgEvent, imgSeat);
+
+          if (imgEvent) {
+            const buffer = await sharp(imgEvent?.buffer).png().toBuffer();
+            eventData.imgEvent = buffer;
+          }
+
+          if (imgSeat) {
+            const buffer2 = await sharp(imgSeat?.buffer).png().toBuffer();
+            eventData.imgSeat = buffer2;
+          }
+        }
 
         const updatedEvent = await prisma.event.update({
           where: { id: Number(id) },
@@ -228,8 +249,27 @@ class EventService {
     const { id } = req.params;
     console.log(id);
 
+<<<<<<< Updated upstream
     return await prisma.event.delete({
       where: { id: parseInt(id) },
+=======
+    return await prisma.$transaction(async (tx) => {
+      try {
+        await tx.eventPrice.deleteMany({
+          where: {
+            eventId: eventId,
+          },
+        });
+
+        await tx.event.delete({
+          where: {
+            id: eventId,
+          },
+        });
+      } catch (error) {
+        throw error;
+      }
+>>>>>>> Stashed changes
     });
   }
 
