@@ -95,18 +95,8 @@ model Event {
 }
 
 model EventPrice {
-<<<<<<< HEAD
-  id            Int           @id @default(autoincrement())
-  categoryEvent String?       @unique
-=======
-<<<<<<< Updated upstream
-  id            Int      @id @default(autoincrement())
-  categoryEvent String?  @unique
-=======
   id            Int           @id @default(autoincrement())
   categoryEvent String?
->>>>>>> Stashed changes
->>>>>>> Branch-buat-merge
   qty           Int
   price         Float
   updatedAt     DateTime      @updatedAt

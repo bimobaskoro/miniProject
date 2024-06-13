@@ -249,13 +249,6 @@ class EventService {
 
     console.log(eventId);
 
-<<<<<<< Updated upstream
-    return await prisma.event.delete({
-<<<<<<< HEAD
-      where: { id: eventId },
-=======
-      where: { id: parseInt(id) },
-=======
     return await prisma.$transaction(async (tx) => {
       try {
         await tx.eventPrice.deleteMany({
@@ -272,8 +265,6 @@ class EventService {
       } catch (error) {
         throw error;
       }
->>>>>>> Stashed changes
->>>>>>> Branch-buat-merge
     });
   }
 
