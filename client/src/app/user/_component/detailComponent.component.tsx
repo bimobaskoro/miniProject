@@ -163,6 +163,11 @@ export default function DetailComponent() {
             <DialogHeader>
               <DialogTitle>Ticket</DialogTitle>
               <form onSubmit={formik.handleSubmit}>
+                <img
+                  src={`http://localhost:8001/posts/imageSeat/${event?.id}`}
+                  className="w-full h-48 object-cover rounded-t-[8px]"
+                  alt=""
+                />
                 {event?.EventPrice.map((e) => (
                   <div key={e.id} className="text-left  mb-2">
                     <input

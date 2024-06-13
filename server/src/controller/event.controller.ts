@@ -51,6 +51,15 @@ export class EventController {
     }
   }
 
+  async renderImageSeat(req: Request, res: Response, next: NextFunction) {
+    try {
+      const blob = await eventService.getImgSeat(req);
+      res.set("Content-type", "image/png");
+      res.send(blob);
+    } catch (err) {
+      next(err);
+    }
+  }
   async eventPriceGetByEventId(
     req: Request,
     res: Response,

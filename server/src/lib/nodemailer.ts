@@ -20,8 +20,7 @@ export const transporter = nodemailer.createTransport({
 export async function sendEmail(
   emailTo: string,
   templateDir: any,
-  href: string,
-  subject: string
+  href: string
 ) {
   const template = fs.readFileSync(join(__dirname, templateDir)).toString();
   if (template) {
@@ -31,7 +30,6 @@ export async function sendEmail(
     });
     await transporter.sendMail({
       to: emailTo,
-      subject,
       html,
     });
   }

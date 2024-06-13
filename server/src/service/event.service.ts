@@ -145,6 +145,17 @@ class EventService {
     return data?.imgEvent;
   }
 
+  async getImgSeat(req: Request) {
+    const eventId = parseInt(req.params.eventId);
+
+    const data = await prisma.event.findUnique({
+      where: {
+        id: eventId,
+      },
+    });
+    return data?.imgSeat;
+  }
+
   async getEventPriceByIdEvent() {
     const allEventPrices = await prisma.eventPrice.findMany();
     return allEventPrices;

@@ -29,6 +29,7 @@ class PostEvent {
       eventController.postEvent
     );
     this.router.get("/image/:eventId", eventController.renderImageEvent);
+    this.router.get("/imageSeat/:eventId", eventController.renderImageSeat);
     this.router.get("/eventPrice", eventController.eventPriceGetByEventId);
     this.router.get("/:adminId", eventController.eventGetByID);
     this.router.get("/event/:id", eventController.eventGetById);

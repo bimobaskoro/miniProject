@@ -11,6 +11,8 @@ import { Jwt } from "jsonwebtoken";
 import { verify } from "jsonwebtoken";
 import { SECRET_KEY } from "../config/config";
 import { SECRET_KEY_2 } from "../config/config";
+import fs from "fs";
+import path from "path";
 
 class UserService {
   public model = prisma.accountData;
@@ -175,14 +177,13 @@ class UserService {
 
   async forgotPassword(req: Request) {
     const { token } = req.params;
-    const { email, password } = req.body;
+    const { password } = req.body;
     const hashPass = await hashPassword(password);
     const newPass = verify(token, SECRET_KEY_2) as TAccountData;
 
     try {
       await prisma.accountData.update({
         where: {
-          email: email,
           id: newPass?.id,
         },
         data: {
@@ -206,16 +207,31 @@ class UserService {
         throw new Error("User not found");
       }
 
-      const token = createToken({ id: user?.id, email: user.email }, "5m");
-      const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+      // const templatePath = path.join(
+      //   __dirname,
+      //   "../templates/",
+      //   "verification.template.hbs"
+      // );
 
+      // const templateSource = fs.readFileSync(templatePath, "utf-8");
+
+      // const compiledTemplate = Handlebars.compile(templateSource);
+
+      const token = createToken({ id: user?.id }, "5m");
+      console.log("====================================");
+      console.log("ini token", token);
+      console.log("====================================");
+      const resetLink = `http://localhost:3000/forgotPass/${token}`;
+      // const html = compiledTemplate(resetLink);
       await sendEmail(
         user.email,
         "../templates/forgotPassword.template.hbs",
-        resetLink,
-        "Password Reset Request"
+        resetLink
+        // "Password Reset Request"
       );
-    } catch (error) {}
+    } catch (error) {
+      console.log("Error", error);
+    }
   }
 }
 export default new UserService();

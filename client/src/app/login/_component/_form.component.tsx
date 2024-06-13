@@ -15,14 +15,6 @@ export default function FormComponent() {
   const user = useSelector((state: RootState) => state.auth);
   const router = useRouter();
 
-  const forgotPass = async () => {
-    try {
-      return await axiosInstance().get("");
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -49,7 +41,7 @@ export default function FormComponent() {
   return (
     <>
       <div className="flex justify-center items-center h-screen">
-        <div className="card border border-solid border-black p-10 bg-black  bg-opacity-50">
+        <div className="card border border-solid border-black p-10 bg-black w-screen h-screen bg-opacity-50">
           <p className="text-center text-4xl">LOGIN</p>
           <div>
             <label>Email</label>
@@ -81,7 +73,7 @@ export default function FormComponent() {
             >
               Login
             </button>
-            <a onClick={forgotPass}>Forgot password</a>
+            <a href="/inputEmail">Forgot password</a>
           </div>
         </div>
       </div>
