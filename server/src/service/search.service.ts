@@ -6,10 +6,6 @@ class SearchService {
   async Search(req: Request) {
     const title = typeof req.query.title === "string" ? req.query.title : "";
 
-    if (!title) {
-      throw new Error("Title parameter is required");
-    }
-
     try {
       return await prisma.event.findMany({
         where: {

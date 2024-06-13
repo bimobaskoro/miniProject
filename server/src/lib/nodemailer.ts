@@ -2,6 +2,8 @@ import nodemailer from "nodemailer";
 import { user, pass } from "../config/config";
 import path from "path";
 import fs from "fs";
+import { join } from "path";
+import { render } from "mustache";
 import { TAccountData } from "../model/user.model";
 import Handlebars from "handlebars";
 import { createToken } from "./jwt";
@@ -15,6 +17,25 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
+export async function sendEmail(
+  emailTo: string,
+  templateDir: any,
+  href: string,
+  subject: string
+) {
+  const template = fs.readFileSync(join(__dirname, templateDir)).toString();
+  if (template) {
+    const html = render(template, {
+      email: emailTo,
+      href,
+    });
+    await transporter.sendMail({
+      to: emailTo,
+      subject,
+      html,
+    });
+  }
+}
 export const handleVerification = (user: TAccountData) => {
   const templatePath = path.join(
     __dirname,

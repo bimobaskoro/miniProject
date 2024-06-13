@@ -7,12 +7,22 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/_lib/redux/store";
 import { userLogin } from "@/app/_middleware/auth.middleware";
+import { axiosInstance } from "@/app/_lib/axios";
 
 export default function FormComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth);
   const router = useRouter();
+
+  const forgotPass = async () => {
+    try {
+      return await axiosInstance().get("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -39,7 +49,7 @@ export default function FormComponent() {
   return (
     <>
       <div className="flex justify-center items-center h-screen">
-        <div className="card border border-solid border-black p-10 bg-black bg-opacity-50">
+        <div className="card border border-solid border-black p-10 bg-black  bg-opacity-50">
           <p className="text-center text-4xl">LOGIN</p>
           <div>
             <label>Email</label>
@@ -63,13 +73,16 @@ export default function FormComponent() {
               required
             />
           </div>
-          <button
-            className=" bg-blue-600 text-white p-2 rounded-lg mt-2"
-            onClick={() => formik.handleSubmit()}
-            type="submit"
-          >
-            Login
-          </button>
+          <div className="flex">
+            <button
+              className=" bg-blue-600 text-white p-2 rounded-lg mt-2"
+              onClick={() => formik.handleSubmit()}
+              type="submit"
+            >
+              Login
+            </button>
+            <a onClick={forgotPass}>Forgot password</a>
+          </div>
         </div>
       </div>
     </>

@@ -80,5 +80,29 @@ export class UserController {
       next(error);
     }
   }
+
+  async requestEmailResetPass(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = userService.sendEmailForgotPass(req);
+      res.send({
+        message: "Email has been send",
+        data,
+      });
+    } catch (error) {
+      next;
+    }
+  }
+
+  async forgotPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      UserService.forgotPassword(req);
+      res
+        .status(200)
+        // res.send("verify email success");
+        .redirect("http://localhost:3000/login");
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 export default new UserController();

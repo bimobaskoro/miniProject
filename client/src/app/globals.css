@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  background-color: white;
+  overflow-x: auto;
+}
 .custom-loader {
   width: 100px;
   height: 100px;
@@ -19,10 +23,15 @@
   }
 }
 
+.text-title {
+  white-space: nowrap; /* Mencegah teks wrap ke baris baru */
+  overflow: hidden; /* Mengatur teks yang melebihi lebar untuk disembunyikan */
+  text-overflow: ellipsis; /* Menambahkan titik-titik untuk teks yang terpotong */
+}
 .grid-event {
   display: grid;
   grid-template-columns: auto;
-  gap: 15px;
+  gap: 10px;
 }
 
 .grid-seat {
@@ -34,8 +43,21 @@
 .grid-time {
   display: grid;
   grid-template-columns: auto auto;
-  gap: 10px;
+  gap: 8px;
 }
 
-@media screen and (max-width: 320px) {
+@media screen and (min-width: 1024px) {
+  .grid-event {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 10px;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .grid-event {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 10px;
+  }
 }

@@ -6,9 +6,11 @@ import generateReferalCode from "../lib/referalCode";
 import { toLowerCase } from "../utils/toLowerCase";
 import { TAccountData } from "../model/user.model";
 import { createToken } from "../lib/jwt";
-import { handleVerification } from "../lib/nodemailer";
+import { handleVerification, sendEmail } from "../lib/nodemailer";
+import { Jwt } from "jsonwebtoken";
 import { verify } from "jsonwebtoken";
 import { SECRET_KEY } from "../config/config";
+import { SECRET_KEY_2 } from "../config/config";
 
 class UserService {
   public model = prisma.accountData;
@@ -169,6 +171,51 @@ class UserService {
       },
     });
     handleVerification(newUser as TAccountData);
+  }
+
+  async forgotPassword(req: Request) {
+    const { token } = req.params;
+    const { email, password } = req.body;
+    const hashPass = await hashPassword(password);
+    const newPass = verify(token, SECRET_KEY_2) as TAccountData;
+
+    try {
+      await prisma.accountData.update({
+        where: {
+          email: email,
+          id: newPass?.id,
+        },
+        data: {
+          password: hashPass,
+        },
+      });
+    } catch (error) {
+      throw new Error("Wrong Email");
+    }
+  }
+
+  async sendEmailForgotPass(req: Request) {
+    const { email } = req.body;
+
+    try {
+      const user = await prisma.accountData.findFirst({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      const token = createToken({ id: user?.id, email: user.email }, "5m");
+      const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+      await sendEmail(
+        user.email,
+        "../templates/forgotPassword.template.hbs",
+        resetLink,
+        "Password Reset Request"
+      );
+    } catch (error) {}
   }
 }
 export default new UserService();

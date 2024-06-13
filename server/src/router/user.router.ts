@@ -16,8 +16,10 @@ class UserRouter {
     this.router.post("/v1", loginValidator, userController.login);
     this.router.post("/v2", registerValidator, userController.register);
     this.router.get("/validate", verifyUser, userController.validateUser);
+    this.router.get("/forgotPassword", userController.forgotPassword);
     this.router.get("/:id", userController.userGetById);
     this.router.get("/verify/:token", userController.sendVerification);
+    this.router.post("/sendEmail", userController.requestEmailResetPass);
   }
   getRouter() {
     return this.router;
