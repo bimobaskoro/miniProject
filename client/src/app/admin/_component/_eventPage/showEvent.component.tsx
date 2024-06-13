@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useAppSelector } from "../../../../../hooks";
 import {
   Table,
@@ -10,9 +10,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 import { axiosInstance } from "@/app/_lib/axios";
 import { TEvent } from "@/app/_models/event.model";
+<<<<<<< HEAD
 import Swal from "sweetalert2";
+=======
+<<<<<<< Updated upstream
+>>>>>>> Branch-buat-merge
 
 export default function ShowEventComponent() {
   const [events, setEvent] = useState<TEvent[]>([]);
@@ -33,6 +46,7 @@ export default function ShowEventComponent() {
   useEffect(() => {
     fetchEvents();
   }, [user.id]);
+<<<<<<< HEAD
 
   const deleteEvent = async (id: number) => {
     try {
@@ -45,11 +59,37 @@ export default function ShowEventComponent() {
         showCancelButton: true,
         confirmButtonText: "Save",
         denyButtonText: `Don't save`,
+=======
+=======
+import Swal from "sweetalert2";
+import UpdateEventComponent from "./updateEvent.component";
+import { TUser } from "@/app/_models/user.mode";
+
+export default function ShowEventComponent({
+  events,
+  fetch,
+}: {
+  events: TEvent[];
+  fetch: () => void;
+}) {
+  const deleteEvent = async (id: number) => {
+    try {
+      Swal.fire({
+        title: "Do you want to delete this event?",
+        showDenyButton: true,
+        confirmButtonText: "Delete",
+        denyButtonText: `Cancel`,
+>>>>>>> Branch-buat-merge
       }).then((result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
           Swal.fire("Delete!", " event ", "success");
+<<<<<<< HEAD
           fetchEvents();
+=======
+          axiosInstance().delete(`/posts/${id}`);
+          fetch();
+>>>>>>> Branch-buat-merge
         } else if (result.isDenied) {
           Swal.fire("Delete", " cancel ", "info");
         }
@@ -60,6 +100,10 @@ export default function ShowEventComponent() {
       console.log(error);
     }
   };
+<<<<<<< HEAD
+=======
+>>>>>>> Stashed changes
+>>>>>>> Branch-buat-merge
   return (
     <>
       <Table>
@@ -83,13 +127,35 @@ export default function ShowEventComponent() {
               <TableCell>{e.city}</TableCell>
               <TableCell>{e.status}</TableCell>
               <TableCell>
+<<<<<<< Updated upstream
                 <button className=" bg-[#198754] text-white rounded-sm p-2 w-[57px]">
                   Edit
                 </button>
+<<<<<<< HEAD
+=======
+                <button className="bg-[#DC3545] text-white rounded-sm p-2">
+=======
+                <Dialog>
+                  <DialogTrigger className=" bg-[#198754] text-white rounded-sm p-2 w-[57px]">
+                    Edit
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogDescription>
+                        <UpdateEventComponent eventProps={e} />
+                      </DialogDescription>
+                    </DialogHeader>
+                  </DialogContent>
+                </Dialog>
+>>>>>>> Branch-buat-merge
                 <button
                   className="bg-[#DC3545] text-white rounded-sm p-2"
                   onClick={() => deleteEvent(e.id)}
                 >
+<<<<<<< HEAD
+=======
+>>>>>>> Stashed changes
+>>>>>>> Branch-buat-merge
                   Delete
                 </button>
               </TableCell>
