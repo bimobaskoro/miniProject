@@ -3,7 +3,7 @@ import eventController from "../controller/event.controller";
 import { verifyUser } from "../middlewares/auth.middleware";
 import {
   eventValidator,
-  seatValidator,
+  eventPriceValidator,
 } from "../middlewares/joi.validator.middleware";
 import { blobUploader, uploader, uploaderSeat } from "../lib/multer";
 
@@ -33,12 +33,29 @@ class PostEvent {
     this.router.get("/:adminId", eventController.eventGetByID);
     this.router.get("/event/:id", eventController.eventGetById);
     this.router.get("/", eventController.eventGetAll);
+<<<<<<< HEAD
+=======
+<<<<<<< Updated upstream
+    this.router.delete("/event/:id", eventController.deleteEventById);
+    this.router.patch("/event/:id", eventController.updateEventById);
+=======
+>>>>>>> Branch-buat-merge
     this.router.delete("/:eventId", eventController.deleteEventById);
     this.router.patch(
       "/event/:eventId",
       verifyUser,
+<<<<<<< HEAD
       eventController.updateEventById
     );
+=======
+      blobUploader().fields([
+        { name: "imgEvent", maxCount: 1 },
+        { name: "imgSeat", maxCount: 1 },
+      ]),
+      eventController.updateEventById
+    );
+>>>>>>> Stashed changes
+>>>>>>> Branch-buat-merge
     // this.router.patch("/:id", eventController.updateGetById);
     // this.router.delete(
     //   "/event/:id",
